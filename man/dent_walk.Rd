@@ -48,3 +48,20 @@ The algorithm tunes: if it is moving too far away from the desired likelihoods, 
 
 In general, the idea of this is not to give you a pleasingly narrow range of possible values -- it is to try to find the actual uncertainty, including finding any ridges that would not be seen in univariate space.
 }
+\examples{
+sims <- rnorm(100, mean=17)
+possible_means <- seq(from=16, to=18, length.out=100)
+
+# Make sure we have a function that takes in a parameters vector, other arguments if needed,
+# and returns the negative log likelihood
+dnorm_to_run <- function(par, sims) {
+  return(-sum(dnorm(x=sims, mean=par, log=TRUE)))
+}
+
+optimized_results <- optimize(dnorm_to_run,interval=range(possible_means), sims=sims, maximum=FALSE)
+best_par <- optimized_results$minimum
+best_neglogL <- optimized_results$objective
+
+dented_results <- dent_walk(par=best_par, fn=dnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, sims=sims)
+plot(dented_results$results$mean, dented_results$results$neglnL)
+}

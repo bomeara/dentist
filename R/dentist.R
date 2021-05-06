@@ -18,7 +18,22 @@
 #' @param ... Other arguments to fn. 
 #' @return A dentist object containing results, the data.frame of negative log likelihoods and the parameters associated with them, and acceptances, the vector of whether a proposed move was accepted each step.
 #' @export
-
+#' @examples
+#' sims <- rnorm(100, mean=17)
+#' possible_means <- seq(from=16, to=18, length.out=100)
+#' 
+#' # Make sure we have a function that takes in a parameters vector, other arguments if needed,
+#' # and returns the negative log likelihood
+#' dnorm_to_run <- function(par, sims) {
+#'   return(-sum(dnorm(x=sims, mean=par, log=TRUE)))
+#' }
+#' 
+#' optimized_results <- optimize(dnorm_to_run,interval=range(possible_means), sims=sims, maximum=FALSE)
+#' best_par <- optimized_results$minimum
+#' best_neglogL <- optimized_results$objective
+#' 
+#' dented_results <- dent_walk(par=best_par, fn=dnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, sims=sims)
+#' plot(dented_results$results$mean, dented_results$results$neglnL)
 dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, ...) {
   results <- data.frame(matrix(NA, nrow=nsteps+1, ncol=length(par)+1))
   results[1,] <- c(best_neglnL, par)
