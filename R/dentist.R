@@ -16,7 +16,7 @@
 #' @param lower_bound Minimum parameter values to try. One for all or a vector of the length of par.
 #' @param upper_bound Maximum parameter values to try. One for all or a vector of the length of par.
 #' @param ... Other arguments to fn. 
-#' @return A list containing results, the data.frame of negative log likelihoods and the parameters associated with them, and acceptances, the vector of whether a proposed move was accepted each step.
+#' @return A dentist object containing results, the data.frame of negative log likelihoods and the parameters associated with them, and acceptances, the vector of whether a proposed move was accepted each step.
 #' @export
 
 dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, ...) {
@@ -71,7 +71,9 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
     }
   }
   colnames(results) <- c("neglnL", names(par))
-  return(list(results=results, acceptances=acceptances))
+  final_results <- list(results=results, acceptances=acceptances)
+  class(final_results) <- c("dentist", "list")
+  return(final_results)
 }
 
 #' Propose new values
