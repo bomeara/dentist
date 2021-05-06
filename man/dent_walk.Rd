@@ -60,7 +60,7 @@ dnorm_to_run <- function(par, sims) {
 
 optimized_results <- optimize(dnorm_to_run,interval=range(possible_means), sims=sims, maximum=FALSE)
 best_par <- optimized_results$minimum
-best_neglogL <- optimized_results$objective
+best_neglnL <- optimized_results$objective
 
 dented_results <- dent_walk(par=best_par, fn=dnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, sims=sims)
 plot(dented_results$results$mean, dented_results$results$neglnL)

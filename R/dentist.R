@@ -30,7 +30,7 @@
 #' 
 #' optimized_results <- optimize(dnorm_to_run,interval=range(possible_means), sims=sims, maximum=FALSE)
 #' best_par <- optimized_results$minimum
-#' best_neglogL <- optimized_results$objective
+#' best_neglnL <- optimized_results$objective
 #' 
 #' dented_results <- dent_walk(par=best_par, fn=dnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, sims=sims)
 #' plot(dented_results$results$mean, dented_results$results$neglnL)
@@ -41,7 +41,7 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
   acceptances <- rep(NA, nsteps)
   for (rep_index in sequence(nsteps)) {
     old_params <- as.numeric(results[rep_index,-1])
-    new_params <- ProposeValues(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd_vector) 
+    new_params <- dent_propose(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd_vector) 
     new_neglnL <- fn(par=new_params, ...)
     
     new_dented_neglnL <- dent_likelihood(new_neglnL, best_neglnL, delta)
