@@ -4,6 +4,8 @@
 # dentist
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/bomeara/dentist/workflows/R-CMD-check/badge.svg)](https://github.com/bomeara/dentist/actions)
 <!-- badges: end -->
 
 `dentist` is an R package to sample points around a specified distance
@@ -54,8 +56,8 @@ That gives us a point estimate of the best values:
 
 ``` r
 print(best_par)
-#>  meanlog    sdlog 
-#> 1.289791 2.965568
+#>   meanlog     sdlog 
+#> 0.9891576 3.0608822
 ```
 
 But how confident should we be? For familiar distributions like a
@@ -91,24 +93,24 @@ library(dentist)
  dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, print_freq=250, sims=sims)
 #> [1] "Done replicate 250"
 #> [1] "CI of values"
-#>            X1       X2       X3
-#> [1,] 379.6470 1.033434 2.599978
-#> [2,] 381.6358 1.869970 3.398370
+#>            X1        X2       X3
+#> [1,] 352.7942 0.4133952 2.706448
+#> [2,] 354.7909 1.4900110 3.509978
 #> [1] "Done replicate 500"
 #> [1] "CI of values"
 #>            X1        X2       X3
-#> [1,] 379.6470 0.7125465 2.599978
-#> [2,] 381.6358 1.8699703 3.406587
+#> [1,] 352.7942 0.4133952 2.677327
+#> [2,] 354.7909 1.5661700 3.509978
 #> [1] "Done replicate 750"
 #> [1] "CI of values"
-#>           X1        X2       X3
-#> [1,] 379.647 0.7125465 2.599978
-#> [2,] 381.642 1.8699703 3.439620
+#>            X1        X2       X3
+#> [1,] 352.7942 0.3939106 2.677327
+#> [2,] 354.7909 1.5884634 3.548621
 #> [1] "Done replicate 1000"
 #> [1] "CI of values"
-#>           X1        X2       X3
-#> [1,] 379.647 0.7125465 2.599978
-#> [2,] 381.642 1.8699703 3.439620
+#>            X1        X2       X3
+#> [1,] 352.7942 0.3939106 2.677327
+#> [2,] 354.7909 1.5884634 3.548621
 ```
 
 This generates information about the confidence:
@@ -119,11 +121,11 @@ print(dented_results)
 #> 
 #> Parameters: 
 #>                    meanlog    sdlog
-#> best             1.2897910 2.965568
-#> lower.CI         0.7125465 2.599978
-#> upper.CI         1.8699703 3.439620
-#> lowest.examined  0.5843611 2.512604
-#> highest.examined 2.0381225 3.585265
+#> best             0.9891576 3.060882
+#> lower.CI         0.3939106 2.677327
+#> upper.CI         1.5884634 3.548621
+#> lowest.examined  0.1777087 2.583012
+#> highest.examined 1.8202164 3.706332
 ```
 
 And also has a way to visualize the results:
