@@ -7,7 +7,7 @@
 #' The algorithm tunes: if it is moving too far away from the desired likelihoods, it will decrease the proposal width; if it staying in areas better than the desired likelihood, it will increase the proposal width. It will also expand the proposal width for parameters where the extreme values still appear good enough to try to find out the full range for these values. 
 #' 
 #' In general, the idea of this is not to give you a pleasingly narrow range of possible values -- it is to try to find the actual uncertainty, including finding any ridges that would not be seen in univariate space.
-#' @param par Starting parameter vector. Ideally giving the desired likelihood, but starting at the optimum is likely ok. If named, the vector names are used to label output parameters.
+#' @param par Starting parameter vector, generally at the optimum. If named, the vector names are used to label output parameters.
 #' @param fn The likelihood function, assumed to return negative log likelihoods
 #' @param best_neglnL The negative log likelihood at the optimum; other values will be greater than this.
 #' @param delta How far from the optimal negative log likelihood to focus samples
@@ -16,11 +16,12 @@
 #' @param lower_bound Minimum parameter values to try. One for all or a vector of the length of par.
 #' @param upper_bound Maximum parameter values to try. One for all or a vector of the length of par.
 #' @param ... Other arguments to fn. 
-#' @return A dentist object containing results, the data.frame of negative log likelihoods and the parameters associated with them, and acceptances, the vector of whether a proposed move was accepted each step.
+#' @return A dentist object containing results, the data.frame of negative log likelihoods and the parameters associated with them; acceptances, the vector of whether a proposed move was accepted each step; best_neglnL, the best value passed into the analysis; delta, the desired offset; all_ranges, a summary of the results.
 #' @export
 #' @examples
+#' # Univariate case
 #' sims <- rnorm(100, mean=17)
-#' possible_means <- seq(from=16, to=18, length.out=100)
+#' possible_means <- seq(from=16, to=18, length.out=100) # for optimize
 #' 
 #' # Make sure we have a function that takes in a parameters vector, other arguments if needed,
 #' # and returns the negative log likelihood
@@ -30,10 +31,25 @@
 #' 
 #' optimized_results <- optimize(dnorm_to_run,interval=range(possible_means), sims=sims, maximum=FALSE)
 #' best_par <- optimized_results$minimum
+#' names(best_par) <- "mean"
 #' best_neglnL <- optimized_results$objective
 #' 
 #' dented_results <- dent_walk(par=best_par, fn=dnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, sims=sims)
-#' plot(dented_results$results$mean, dented_results$results$neglnL)
+#' plot(dented_results)
+#' 
+#' # Multivariate case
+#' sims <- rlnorm(100, meanlog=1, sdlog=3)
+#' 
+#' dlnorm_to_run <- function(par, sims) {
+#'   return(-sum(dlnorm(sims, meanlog=par[1], sdlog=par[2], log=TRUE)))
+#' }
+#' 
+#' optimized_results <- optim(c(meanlog=.9, sdlog=2.9), dlnorm_to_run, sims=sims)
+#' best_par <- optimized_results$par
+#' best_neglnL <- optimized_results$value
+#' 
+#' dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, sims=sims)
+#' plot(dented_results)
 dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, ...) {
   results <- data.frame(matrix(NA, nrow=nsteps+1, ncol=length(par)+1))
   results[1,] <- c(best_neglnL, par)
@@ -70,9 +86,14 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
       }     
     }
     if(rep_index%%200==0) { # if we haven't found values of some parameters that are outside the CI, widen the search for just those
-      good_enough_results_range <- apply(results[which(results[1:(rep_index+1),1]-min(results[1:(rep_index+1),1])<=2),], 2, range)[,-1]
+      good_enough_results_range <- apply(results[which(results[1:(rep_index+1),1]-min(results[1:(rep_index+1),1])<=delta),], 2, range)[,-1]
       all_results_range <- apply(results[1:(rep_index+1),], 2, range)[,-1]
-      not_past_bounds <- apply(all_results_range==good_enough_results_range, 2, any)
+	  not_past_bounds <- rep(FALSE, ncol(results)-1)
+	  if(!is.null(dim(all_results_range))) {
+		not_past_bounds <- apply(all_results_range==good_enough_results_range, 2, any)
+	  } else {
+		not_past_bounds <- any(all_results_range==good_enough_results_range) # single parameter
+	  }
       if(any(not_past_bounds)) {
         sd_vector[not_past_bounds] <- sd_vector[not_past_bounds]*1.5
       }
@@ -80,13 +101,27 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
     if(rep_index%%print_freq==0) {
       print(paste("Done replicate",rep_index))
       print("CI of values")
-      intermediate_results <- apply(results[which(results[1:(rep_index+1),1]-min(results[1:(rep_index+1),1])<=2),], 2, range)
+      intermediate_results <- apply(results[which(results[1:(rep_index+1),1]-min(results[1:(rep_index+1),1])<=delta),], 2, range)
       #colnames(intermediate_results) <- c("neglnL", names(par))
       print(intermediate_results)
     }
   }
   colnames(results) <- c("neglnL", names(par))
-  final_results <- list(results=results, acceptances=acceptances)
+  CI_range <- apply(results[which(results[1:(rep_index+1),1]-min(results[1:(rep_index+1),1])<=delta),], 2, range)[,-1]
+
+  total_range <- apply(results, 2, range)[,-1]
+  best_vals <- results[which.min(results[,1]),][,-1]
+  if(is.null(dim(CI_range))) { #single parameter, so rearrange
+	  CI_range <- t(t(CI_range))
+	  total_range <- t(t(total_range))
+  }
+  all_ranges <- rbind(best_vals, CI_range, total_range)
+  rownames(all_ranges) <- c("best", "lower.CI", "upper.CI", "lowest.examined", "highest.examined")
+  if(min(results[,1])<best_neglnL) {
+	 warning(paste0("The best negative log likelihood found during sampling was ",  best_neglnL-min(results[,1]), " negative log likelihood units BETTER than the starting best value. This can indicate your original optimization search failed to find the global optimum, especially if this number is large (>0.1)"))
+  }
+
+  final_results <- list(results=results, acceptances=acceptances, best_neglnL=best_neglnL, delta=delta, all_ranges=all_ranges)
   class(final_results) <- c("dentist", "list")
   return(final_results)
 }
@@ -135,4 +170,52 @@ dent_likelihood <- function(neglnL, best_neglnL, delta=2) {
     neglnL <- (best_neglnL+delta) - difference
   }
   return(neglnL)
+}
+
+#' Plot the dented samples
+#' This will show the univariate plots of the parameter values versus the likelihood as well as bivariate plots of pairs of parameters to look for ridges.
+#' @param dentist_object An object of class dentist
+#' @param ... Other arguments to pass to plot
+#' @export
+plot.dentist <- function(dentist_object, ...) {
+	nparams <- ncol(dentist_object$results)-1
+	nplots <- nparams + (nparams^2 - nparams)/2
+	results <- dentist_object$results
+	threshold <- dentist_object$best_neglnL + dentist_object$delta
+	results$color <- ifelse(results[,1]<=threshold, "black", "gray")
+	results_outside <- subset(results, results$color=="gray")
+	results_inside <- subset(results, results$color=="black")
+	par(mfrow=c(ceiling(nplots/nparams), nparams))
+	for (i in sequence(nparams)) {
+		plot(results[,i+1], results[,1], pch=20, col=results$color, main=colnames(results)[i+1], xlab=colnames(results)[i+1], ylab="Negative Log Likelihood", bty="n", ...)
+		abline(h=threshold, col="blue")
+		points(results[which.min(results[,1]), i+1], results[which.min(results[,1]),1], pch=21, col="red")
+	}
+	for (i in sequence(nparams)) {
+		for (j in sequence(nparams)) {
+			if(j>i) {
+				plot(results_outside[,i+1], results_outside[,j+1], pch=20, col=results_outside$color, xlab=colnames(results)[i+1], ylab=colnames(results)[j+1], bty="n", main=paste0(colnames(results)[j+1], " vs. ", colnames(results)[i+1]), ...)
+				points(results_inside[,i+1], results_inside[,j+1], pch=20, col=results_inside$color)
+				points(results[which.min(results[,1]), i+1], results[which.min(results[,1]),j+1], pch=21, col="red")
+			}
+		}	
+	}
+}
+
+#' Summarize dentist
+#' Display summary of output from dent_walk
+#' @param dentist_object An object of class dentist
+#' @export
+summary.dentist <- function(dentist_object) {
+	cat(paste0("This ran ", nrow(dentist_object$results)-1, " steps looking for all points within ", dentist_object$delta, " negative log likelihood units of the best parameter values.\n"))
+	cat("\nParameters: \n")
+	print(dented_results$all_ranges)
+}
+
+#' Print dentist
+#' print summary of output from dent_walk
+#' @param dentist_object An object of class dentist
+#' @export
+print.dentist <- function(dentist_object) {
+	summary.dentist(dentist_object)	
 }

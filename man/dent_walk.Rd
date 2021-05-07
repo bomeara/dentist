@@ -19,7 +19,7 @@ dent_walk(
 )
 }
 \arguments{
-\item{par}{Starting parameter vector. Ideally giving the desired likelihood, but starting at the optimum is likely ok. If named, the vector names are used to label output parameters.}
+\item{par}{Starting parameter vector, generally at the optimum. If named, the vector names are used to label output parameters.}
 
 \item{fn}{The likelihood function, assumed to return negative log likelihoods}
 
@@ -38,7 +38,7 @@ dent_walk(
 \item{...}{Other arguments to fn.}
 }
 \value{
-A dentist object containing results, the data.frame of negative log likelihoods and the parameters associated with them, and acceptances, the vector of whether a proposed move was accepted each step.
+A dentist object containing results, the data.frame of negative log likelihoods and the parameters associated with them; acceptances, the vector of whether a proposed move was accepted each step; best_neglnL, the best value passed into the analysis; delta, the desired offset; all_ranges, a summary of the results.
 }
 \description{
 While running, it will display the current range of likelihoods in the desired range (by default, the best negative log likelihood + 2 negative log likelihood units) and the parameter values falling in that range. If things are working well, the range of values will stabilize during a search.
@@ -49,8 +49,9 @@ The algorithm tunes: if it is moving too far away from the desired likelihoods, 
 In general, the idea of this is not to give you a pleasingly narrow range of possible values -- it is to try to find the actual uncertainty, including finding any ridges that would not be seen in univariate space.
 }
 \examples{
+# Univariate case
 sims <- rnorm(100, mean=17)
-possible_means <- seq(from=16, to=18, length.out=100)
+possible_means <- seq(from=16, to=18, length.out=100) # for optimize
 
 # Make sure we have a function that takes in a parameters vector, other arguments if needed,
 # and returns the negative log likelihood
@@ -60,8 +61,23 @@ dnorm_to_run <- function(par, sims) {
 
 optimized_results <- optimize(dnorm_to_run,interval=range(possible_means), sims=sims, maximum=FALSE)
 best_par <- optimized_results$minimum
+names(best_par) <- "mean"
 best_neglnL <- optimized_results$objective
 
 dented_results <- dent_walk(par=best_par, fn=dnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, sims=sims)
-plot(dented_results$results$mean, dented_results$results$neglnL)
+plot(dented_results)
+
+# Multivariate case
+sims <- rlnorm(100, meanlog=1, sdlog=3)
+
+dlnorm_to_run <- function(par, sims) {
+  return(-sum(dlnorm(sims, meanlog=par[1], sdlog=par[2], log=TRUE)))
+}
+
+optimized_results <- optim(c(meanlog=.9, sdlog=2.9), dlnorm_to_run, sims=sims)
+best_par <- optimized_results$par
+best_neglnL <- optimized_results$value
+
+dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, sims=sims)
+plot(dented_results)
 }
