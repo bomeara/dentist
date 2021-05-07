@@ -50,8 +50,8 @@ That gives us a point estimate of the best values:
 
 ``` r
 print(best_par)
-#>   meanlog     sdlog 
-#> 0.9812228 2.9305144
+#>  meanlog    sdlog 
+#> 1.225799 3.134044
 ```
 
 But how confident should we be? For familiar distributions like a
@@ -75,10 +75,10 @@ to show how the original surface (left) is dented (right):
 
     #> Scale for 'fill' is already present. Adding another scale for 'fill', which
     #> will replace the existing scale.
-    #> Warning: Removed 1992 row(s) containing missing values (geom_path).
+    #> Warning: Removed 1029 row(s) containing missing values (geom_path).
     #> Scale for 'fill' is already present. Adding another scale for 'fill', which
     #> will replace the existing scale.
-    #> Warning: Removed 2006 row(s) containing missing values (geom_path).
+    #> Warning: Removed 963 row(s) containing missing values (geom_path).
 
 <img src="man/figures/README-awesomeness-1.png" width="100%" />
 
@@ -91,107 +91,27 @@ And now to sample around that ring on the right:
 
 ``` r
 library(dentist)
- dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, sims=sims)
-#> [1] "Done replicate 50"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.8511306 2.567469
-#> [2,] 349.4909 1.1874057 2.930514
-#> [1] "Done replicate 100"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.5038479 2.567469
-#> [2,] 349.4926 1.1874057 3.319883
-#> [1] "Done replicate 150"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.5038479 2.567469
-#> [2,] 349.4926 1.1874057 3.372017
-#> [1] "Done replicate 200"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5174 1.1874057 3.372017
+ dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, print_freq=250, sims=sims)
 #> [1] "Done replicate 250"
 #> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5174 1.5657412 3.372017
-#> [1] "Done replicate 300"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5174 1.5657412 3.378537
-#> [1] "Done replicate 350"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5174 1.5657412 3.378537
-#> [1] "Done replicate 400"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5308 1.5657412 3.378537
-#> [1] "Done replicate 450"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5308 1.5657412 3.378537
+#>            X1       X2       X3
+#> [1,] 378.6327 1.078291 2.828391
+#> [2,] 380.6262 1.840097 3.626785
 #> [1] "Done replicate 500"
 #> [1] "CI of values"
 #>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5308 1.5657412 3.378537
-#> [1] "Done replicate 550"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5308 1.5657412 3.378537
-#> [1] "Done replicate 600"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5308 1.5657412 3.378537
-#> [1] "Done replicate 650"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5308 1.5657412 3.378537
-#> [1] "Done replicate 700"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5308 1.5657412 3.378537
+#> [1,] 378.6327 0.6041034 2.798553
+#> [2,] 380.6262 1.8400972 3.626785
 #> [1] "Done replicate 750"
 #> [1] "CI of values"
 #>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5308 1.5657412 3.378537
-#> [1] "Done replicate 800"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5308 1.5657412 3.378537
-#> [1] "Done replicate 850"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5308 1.5657412 3.396274
-#> [1] "Done replicate 900"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5308 1.5657412 3.396274
-#> [1] "Done replicate 950"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5308 1.5657412 3.396274
+#> [1,] 378.6327 0.6041034 2.762845
+#> [2,] 380.6262 1.8400972 3.626785
 #> [1] "Done replicate 1000"
 #> [1] "CI of values"
 #>            X1        X2       X3
-#> [1,] 347.5408 0.3939221 2.566562
-#> [2,] 349.5308 1.5657412 3.396274
+#> [1,] 378.6327 0.6041034 2.762845
+#> [2,] 380.6262 1.8400972 3.626785
 ```
 
 This generates information about the confidence:
@@ -202,11 +122,11 @@ print(dented_results)
 #> 
 #> Parameters: 
 #>                    meanlog    sdlog
-#> best             0.9812228 2.930514
-#> lower.CI         0.3939221 2.566562
-#> upper.CI         1.5657412 3.396274
-#> lowest.examined  0.2573539 2.476691
-#> highest.examined 1.6745565 3.550116
+#> best             1.2257994 3.134044
+#> lower.CI         0.6041034 2.762845
+#> upper.CI         1.8400972 3.626785
+#> lowest.examined  0.4562914 2.680044
+#> highest.examined 2.0491200 3.806054
 ```
 
 And also has a way to visualize the results:
@@ -215,7 +135,7 @@ And also has a way to visualize the results:
 plot(dented_results)
 ```
 
-<img src="man/figures/README-cars-1.png" width="100%" />
+<img src="man/figures/README-summarized_results-1.png" width="100%" />
 
 You do not need to use this package for simple distributions, but in
 phylogenetics, where programs like OUwie, corHMM, hisse, OUCH, and more
