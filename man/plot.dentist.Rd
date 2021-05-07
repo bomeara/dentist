@@ -5,10 +5,10 @@
 \title{Plot the dented samples
 This will show the univariate plots of the parameter values versus the likelihood as well as bivariate plots of pairs of parameters to look for ridges.}
 \usage{
-\method{plot}{dentist}(dentist_object, ...)
+\method{plot}{dentist}(x, ...)
 }
 \arguments{
-\item{dentist_object}{An object of class dentist}
+\item{x}{An object of class dentist}
 
 \item{...}{Other arguments to pass to plot}
 }

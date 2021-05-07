@@ -1,5 +1,6 @@
 Package: dentist
-Title: Dents the Likelihood Surface to Estimate Parameter Uncertainty
+Title: Dents the Likelihood Surface to Estimate Parameter
+    Uncertainty
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Brian",
@@ -7,12 +8,21 @@ Authors@R:
            role = c("aut", "cre"),
            email = "omeara.brian@gmail.com",
            comment = c(ORCID = "0000-0002-0337-5997"))
-Description: This will sample points around a specified distance from the maximum likelihood estimates. This should be a better way to estimate uncertainty than using the Hessian of the likelihood equation. It works by "denting" the likelihood surface to make a ridge at your desired ∆lnL and then "walks" around this dented surface, sampling points.
+Description: This will sample points around a specified distance
+    from the maximum likelihood estimates. This should be a better way to
+    estimate uncertainty than using the Hessian of the likelihood
+    equation. It works by "denting" the likelihood surface to make a ridge
+    at your desired ∆lnL and then "walks" around this dented surface,
+    sampling points.
 License: GPL (>= 3)
+Imports: 
+    graphics,
+    stats,
+    utils
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-Suggests: 
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3

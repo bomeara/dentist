@@ -5,10 +5,12 @@
 \title{Print dentist
 print summary of output from dent_walk}
 \usage{
-\method{print}{dentist}(dentist_object)
+\method{print}{dentist}(dentist_object, ...)
 }
 \arguments{
 \item{dentist_object}{An object of class dentist}
+
+\item{...}{Other arguments (not used)}
 }
 \description{
 Print dentist

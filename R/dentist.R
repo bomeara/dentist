@@ -20,35 +20,36 @@
 #' @export
 #' @examples
 #' # Univariate case
-#' sims <- rnorm(100, mean=17)
+#' sims <- stats::rnorm(100, mean=17)
 #' possible_means <- seq(from=16, to=18, length.out=100) # for optimize
 #' 
 #' # Make sure we have a function that takes in a parameters vector, other arguments if needed,
 #' # and returns the negative log likelihood
 #' dnorm_to_run <- function(par, sims) {
-#'   return(-sum(dnorm(x=sims, mean=par, log=TRUE)))
+#'   return(-sum(stats::dnorm(x=sims, mean=par, log=TRUE)))
 #' }
 #' 
-#' optimized_results <- optimize(dnorm_to_run,interval=range(possible_means), sims=sims, maximum=FALSE)
+#' optimized_results <- stats::optimize(dnorm_to_run,interval=range(possible_means), 
+#'   sims=sims, maximum=FALSE)
 #' best_par <- optimized_results$minimum
 #' names(best_par) <- "mean"
 #' best_neglnL <- optimized_results$objective
 #' 
-#' dented_results <- dent_walk(par=best_par, fn=dnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, sims=sims)
+#' dented_results <- dent_walk(par=best_par, fn=dnorm_to_run, best_neglnL=best_neglnL, sims=sims)
 #' plot(dented_results)
 #' 
 #' # Multivariate case
-#' sims <- rlnorm(100, meanlog=1, sdlog=3)
+#' sims <- stats::rlnorm(100, meanlog=1, sdlog=3)
 #' 
 #' dlnorm_to_run <- function(par, sims) {
-#'   return(-sum(dlnorm(sims, meanlog=par[1], sdlog=par[2], log=TRUE)))
+#'   return(-sum(stats::dlnorm(sims, meanlog=par[1], sdlog=par[2], log=TRUE)))
 #' }
 #' 
-#' optimized_results <- optim(c(meanlog=.9, sdlog=2.9), dlnorm_to_run, sims=sims)
+#' optimized_results <- stats::optim(c(meanlog=.9, sdlog=2.9), dlnorm_to_run, sims=sims)
 #' best_par <- optimized_results$par
 #' best_neglnL <- optimized_results$value
 #' 
-#' dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, sims=sims)
+#' dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL, sims=sims)
 #' plot(dented_results)
 dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, ...) {
   results <- data.frame(matrix(NA, nrow=nsteps+1, ncol=length(par)+1))
@@ -68,7 +69,7 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
       results[rep_index+1,] <- c(new_neglnL, new_params)
       acceptances[rep_index]<-TRUE
     } else {
-      if(new_dented_neglnL-old_dented_neglnL < runif(1)) {
+      if(new_dented_neglnL-old_dented_neglnL < stats::runif(1)) {
         results[rep_index+1,] <- c(new_neglnL, new_params)
         acceptances[rep_index]<-TRUE
       } else {
@@ -77,7 +78,7 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
       }
     }
     if(rep_index%%100==0) { # adaptively change proposal width for all params at once
-      acceptances_run <- tail(acceptances[!is.na(acceptances)],100)
+      acceptances_run <- utils::tail(acceptances[!is.na(acceptances)],100)
       if(sum(acceptances_run)/length(acceptances_run) > 0.3) {
         sd_vector <- sd_vector * 1.5
       }
@@ -134,9 +135,9 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
 #' @param sd Standard deviation to use for the proposals. One for all or a vector of the length of par.
 #' @return A vector of the new parameter values
 dent_propose <- function(old_params, lower_bound=0, upper_bound=Inf, sd=1) {
-  new_params <- rnorm(length(old_params), old_params, sd)
+  new_params <- stats::rnorm(length(old_params), old_params, sd)
   while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
-    new_params <- rnorm(length(old_params), old_params, sd)
+    new_params <- stats::rnorm(length(old_params), old_params, sd)
   }
   return(new_params)
 }
@@ -149,17 +150,18 @@ dent_propose <- function(old_params, lower_bound=0, upper_bound=Inf, sd=1) {
 #' @return The transformed negative log likelihood
 #' @export
 #' @examples
-#' sims <- rnorm(100, mean=17)
+#' sims <- stats::rnorm(100, mean=17)
 #' possible_means <- seq(from=16, to=18, length.out=100)
 #' results_normal <- rep(NA, length(possible_means))
 #' results_dented <- results_normal
 #' dnorm_to_run <- function(par, sims) {
 #'   return(-sum(dnorm(x=sims, mean=par, log=TRUE)))
 #' }
-#' best_neglnL <- optimize(dnorm_to_run,interval=range(possible_means), sims=sims, maximum=FALSE)$objective
+#' best_neglnL <- optimize(dnorm_to_run,interval=range(possible_means), 
+#'   sims=sims, maximum=FALSE)$objective
 #' for (i in seq_along(possible_means)) {
 #'   results_normal[i] <- dnorm_to_run(possible_means[i], sims=sims)
-#'   results_dented[i] <- dent_likelihood(par=possible_means[i], fn=dnorm_to_run, best_neglnL=best_neglnL, delta=2, sims=sims)
+#'   results_dented[i] <- dent_likelihood(results_normal[i], best_neglnL=best_neglnL, delta=2)
 #' }
 #' 
 #' plot(possible_means, results_normal)
@@ -174,29 +176,29 @@ dent_likelihood <- function(neglnL, best_neglnL, delta=2) {
 
 #' Plot the dented samples
 #' This will show the univariate plots of the parameter values versus the likelihood as well as bivariate plots of pairs of parameters to look for ridges.
-#' @param dentist_object An object of class dentist
+#' @param x An object of class dentist
 #' @param ... Other arguments to pass to plot
 #' @export
-plot.dentist <- function(dentist_object, ...) {
-	nparams <- ncol(dentist_object$results)-1
+plot.dentist <- function(x, ...) {
+	nparams <- ncol(x$results)-1
 	nplots <- nparams + (nparams^2 - nparams)/2
-	results <- dentist_object$results
-	threshold <- dentist_object$best_neglnL + dentist_object$delta
+	results <- x$results
+	threshold <- x$best_neglnL + x$delta
 	results$color <- ifelse(results[,1]<=threshold, "black", "gray")
 	results_outside <- subset(results, results$color=="gray")
 	results_inside <- subset(results, results$color=="black")
-	par(mfrow=c(ceiling(nplots/nparams), nparams))
+	graphics::par(mfrow=c(ceiling(nplots/nparams), nparams))
 	for (i in sequence(nparams)) {
 		plot(results[,i+1], results[,1], pch=20, col=results$color, main=colnames(results)[i+1], xlab=colnames(results)[i+1], ylab="Negative Log Likelihood", bty="n", ...)
-		abline(h=threshold, col="blue")
-		points(results[which.min(results[,1]), i+1], results[which.min(results[,1]),1], pch=21, col="red")
+		graphics::abline(h=threshold, col="blue")
+		graphics::points(results[which.min(results[,1]), i+1], results[which.min(results[,1]),1], pch=21, col="red")
 	}
 	for (i in sequence(nparams)) {
 		for (j in sequence(nparams)) {
 			if(j>i) {
 				plot(results_outside[,i+1], results_outside[,j+1], pch=20, col=results_outside$color, xlab=colnames(results)[i+1], ylab=colnames(results)[j+1], bty="n", main=paste0(colnames(results)[j+1], " vs. ", colnames(results)[i+1]), ...)
-				points(results_inside[,i+1], results_inside[,j+1], pch=20, col=results_inside$color)
-				points(results[which.min(results[,1]), i+1], results[which.min(results[,1]),j+1], pch=21, col="red")
+				graphics::points(results_inside[,i+1], results_inside[,j+1], pch=20, col=results_inside$color)
+				graphics::points(results[which.min(results[,1]), i+1], results[which.min(results[,1]),j+1], pch=21, col="red")
 			}
 		}	
 	}
@@ -204,18 +206,20 @@ plot.dentist <- function(dentist_object, ...) {
 
 #' Summarize dentist
 #' Display summary of output from dent_walk
-#' @param dentist_object An object of class dentist
+#' @param object An object of class dentist
+#' @param ... Other arguments (not used)
 #' @export
-summary.dentist <- function(dentist_object) {
-	cat(paste0("This ran ", nrow(dentist_object$results)-1, " steps looking for all points within ", dentist_object$delta, " negative log likelihood units of the best parameter values.\n"))
+summary.dentist <- function(object, ...) {
+	cat(paste0("This ran ", nrow(object$results)-1, " steps looking for all points within ", object$delta, " negative log likelihood units of the best parameter values.\n"))
 	cat("\nParameters: \n")
-	print(dented_results$all_ranges)
+	print(object$all_ranges)
 }
 
 #' Print dentist
 #' print summary of output from dent_walk
-#' @param dentist_object An object of class dentist
+#' @param object An object of class dentist
+#' @param ... Other arguments (not used)
 #' @export
-print.dentist <- function(dentist_object) {
-	summary.dentist(dentist_object)	
+print.dentist <- function(object, ...) {
+	summary.dentist(object,...)	
 }

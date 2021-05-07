@@ -5,10 +5,12 @@
 \title{Summarize dentist
 Display summary of output from dent_walk}
 \usage{
-\method{summary}{dentist}(dentist_object)
+\method{summary}{dentist}(object, ...)
 }
 \arguments{
-\item{dentist_object}{An object of class dentist}
+\item{object}{An object of class dentist}
+
+\item{...}{Other arguments (not used)}
 }
 \description{
 Summarize dentist

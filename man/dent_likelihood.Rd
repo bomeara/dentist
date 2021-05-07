@@ -22,17 +22,18 @@ Dents the likelihood surface
 This takes any values that are better (lower) than the desired negative log likelihood and reflects them across the best_neglnL + delta line, "denting" the likelihood surface.
 }
 \examples{
-sims <- rnorm(100, mean=17)
+sims <- stats::rnorm(100, mean=17)
 possible_means <- seq(from=16, to=18, length.out=100)
 results_normal <- rep(NA, length(possible_means))
 results_dented <- results_normal
 dnorm_to_run <- function(par, sims) {
   return(-sum(dnorm(x=sims, mean=par, log=TRUE)))
 }
-best_neglnL <- optimize(dnorm_to_run,interval=range(possible_means), sims=sims, maximum=FALSE)$objective
+best_neglnL <- optimize(dnorm_to_run,interval=range(possible_means), 
+  sims=sims, maximum=FALSE)$objective
 for (i in seq_along(possible_means)) {
   results_normal[i] <- dnorm_to_run(possible_means[i], sims=sims)
-  results_dented[i] <- dent_likelihood(par=possible_means[i], fn=dnorm_to_run, best_neglnL=best_neglnL, delta=2, sims=sims)
+  results_dented[i] <- dent_likelihood(results_normal[i], best_neglnL=best_neglnL, delta=2)
 }
 
 plot(possible_means, results_normal)
