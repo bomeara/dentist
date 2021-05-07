@@ -54,8 +54,8 @@ That gives us a point estimate of the best values:
 
 ``` r
 print(best_par)
-#>   meanlog     sdlog 
-#> 0.8083545 3.2067271
+#>  meanlog    sdlog 
+#> 1.289791 2.965568
 ```
 
 But how confident should we be? For familiar distributions like a
@@ -77,13 +77,6 @@ Metropolis-Hastings algorithm around a dented likelihood surface, so
 that values better than the ideal threshold are reflected back. First,
 to show how the original surface (left) is dented (right):
 
-    #> Scale for 'fill' is already present. Adding another scale for 'fill', which
-    #> will replace the existing scale.
-    #> Warning: Removed 1107 row(s) containing missing values (geom_path).
-    #> Scale for 'fill' is already present. Adding another scale for 'fill', which
-    #> will replace the existing scale.
-    #> Warning: Removed 1167 row(s) containing missing values (geom_path).
-
 <img src="man/figures/README-awesomeness-1.png" width="100%" />
 
 Note that for plotting, it’s shown with the regular log likelihood:
@@ -98,24 +91,24 @@ library(dentist)
  dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, print_freq=250, sims=sims)
 #> [1] "Done replicate 250"
 #> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 339.3336 0.1734431 2.830086
-#> [2,] 341.3192 0.9546115 3.665512
+#>            X1       X2       X3
+#> [1,] 379.6470 1.033434 2.599978
+#> [2,] 381.6358 1.869970 3.398370
 #> [1] "Done replicate 500"
 #> [1] "CI of values"
 #>            X1        X2       X3
-#> [1,] 339.3336 0.1734431 2.830086
-#> [2,] 341.3192 1.2635862 3.665512
+#> [1,] 379.6470 0.7125465 2.599978
+#> [2,] 381.6358 1.8699703 3.406587
 #> [1] "Done replicate 750"
 #> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 339.3336 0.1734431 2.808579
-#> [2,] 341.3192 1.3395447 3.665512
+#>           X1        X2       X3
+#> [1,] 379.647 0.7125465 2.599978
+#> [2,] 381.642 1.8699703 3.439620
 #> [1] "Done replicate 1000"
 #> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 339.3336 0.1734431 2.808579
-#> [2,] 341.3192 1.4490075 3.696921
+#>           X1        X2       X3
+#> [1,] 379.647 0.7125465 2.599978
+#> [2,] 381.642 1.8699703 3.439620
 ```
 
 This generates information about the confidence:
@@ -125,12 +118,12 @@ print(dented_results)
 #> This ran 1000 steps looking for all points within 2 negative log likelihood units of the best parameter values.
 #> 
 #> Parameters: 
-#>                     meanlog    sdlog
-#> best             0.80835452 3.206727
-#> lower.CI         0.17344308 2.808579
-#> upper.CI         1.44900754 3.696921
-#> lowest.examined  0.01865769 2.716789
-#> highest.examined 1.55223667 3.921917
+#>                    meanlog    sdlog
+#> best             1.2897910 2.965568
+#> lower.CI         0.7125465 2.599978
+#> upper.CI         1.8699703 3.439620
+#> lowest.examined  0.5843611 2.512604
+#> highest.examined 2.0381225 3.585265
 ```
 
 And also has a way to visualize the results:

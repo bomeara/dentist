@@ -106,55 +106,49 @@
 <p>That gives us a point estimate of the best values:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">best_par</span><span class="op">)</span>
-<span class="co">#&gt;   meanlog     sdlog </span>
-<span class="co">#&gt; 0.8083545 3.2067271</span></code></pre></div>
+<span class="co">#&gt;  meanlog    sdlog </span>
+<span class="co">#&gt; 1.289791 2.965568</span></code></pre></div>
 <p>But how confident should we be? For familiar distributions like a binomial distribution we can compute the confidence interval for a parameter estimate. For less familiar ones, we can approximate it using the curvature at the peak. Another approach is to vary one parameter at a time while holding others at their maximum likelihood estimate until the likelihood gets much worse (typically a cutoff of ∆2 log likelihood units is used). That can underestimate the uncertainty, since there could be a ridge in parameter space. A better approach would be to try many values and return all those within some specified likelihood bounds. This could be done with latin hypercubes, but it can be a large part of parameter space to explore. A different approach would be to focus on sampling points right at the boundary of “good enough.” This package does this. If a likelihood surface is a peak, this package wants to sample points around a specified height below the peak to fully sample the uncertainty. It does it by “walking” with a Metropolis-Hastings algorithm around a dented likelihood surface, so that values better than the ideal threshold are reflected back. First, to show how the original surface (left) is dented (right):</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Scale for 'fill' is already present. Adding another scale for 'fill', which</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; will replace the existing scale.</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: Removed 1107 row(s) containing missing values (geom_path).</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Scale for 'fill' is already present. Adding another scale for 'fill', which</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; will replace the existing scale.</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: Removed 1167 row(s) containing missing values (geom_path).</span></span></code></pre></div>
 <p><img src="reference/figures/README-awesomeness-1.png" width="100%"></p>
 <p>Note that for plotting, it’s shown with the regular log likelihood: typically values &lt;&lt; 0, and higher is better. In the package, it wants you to use negative log likelihood, so it would be the mirror image of these plots (lower better).</p>
 <p>And now to sample around that ring on the right:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">dentist</span><span class="op">)</span>
  <span class="va">dented_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dent_walk.html">dent_walk</a></span><span class="op">(</span>par<span class="op">=</span><span class="va">best_par</span>, fn<span class="op">=</span><span class="va">dlnorm_to_run</span>, best_neglnL<span class="op">=</span><span class="va">best_neglnL</span>,  nsteps<span class="op">=</span><span class="fl">1000</span>, print_freq<span class="op">=</span><span class="fl">250</span>, sims<span class="op">=</span><span class="va">sims</span><span class="op">)</span>
 <span class="co">#&gt; [1] "Done replicate 250"</span>
 <span class="co">#&gt; [1] "CI of values"</span>
-<span class="co">#&gt;            X1        X2       X3</span>
-<span class="co">#&gt; [1,] 339.3336 0.1734431 2.830086</span>
-<span class="co">#&gt; [2,] 341.3192 0.9546115 3.665512</span>
+<span class="co">#&gt;            X1       X2       X3</span>
+<span class="co">#&gt; [1,] 379.6470 1.033434 2.599978</span>
+<span class="co">#&gt; [2,] 381.6358 1.869970 3.398370</span>
 <span class="co">#&gt; [1] "Done replicate 500"</span>
 <span class="co">#&gt; [1] "CI of values"</span>
 <span class="co">#&gt;            X1        X2       X3</span>
-<span class="co">#&gt; [1,] 339.3336 0.1734431 2.830086</span>
-<span class="co">#&gt; [2,] 341.3192 1.2635862 3.665512</span>
+<span class="co">#&gt; [1,] 379.6470 0.7125465 2.599978</span>
+<span class="co">#&gt; [2,] 381.6358 1.8699703 3.406587</span>
 <span class="co">#&gt; [1] "Done replicate 750"</span>
 <span class="co">#&gt; [1] "CI of values"</span>
-<span class="co">#&gt;            X1        X2       X3</span>
-<span class="co">#&gt; [1,] 339.3336 0.1734431 2.808579</span>
-<span class="co">#&gt; [2,] 341.3192 1.3395447 3.665512</span>
+<span class="co">#&gt;           X1        X2       X3</span>
+<span class="co">#&gt; [1,] 379.647 0.7125465 2.599978</span>
+<span class="co">#&gt; [2,] 381.642 1.8699703 3.439620</span>
 <span class="co">#&gt; [1] "Done replicate 1000"</span>
 <span class="co">#&gt; [1] "CI of values"</span>
-<span class="co">#&gt;            X1        X2       X3</span>
-<span class="co">#&gt; [1,] 339.3336 0.1734431 2.808579</span>
-<span class="co">#&gt; [2,] 341.3192 1.4490075 3.696921</span></code></pre></div>
+<span class="co">#&gt;           X1        X2       X3</span>
+<span class="co">#&gt; [1,] 379.647 0.7125465 2.599978</span>
+<span class="co">#&gt; [2,] 381.642 1.8699703 3.439620</span></code></pre></div>
 <p>This generates information about the confidence:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">dented_results</span><span class="op">)</span>
 <span class="co">#&gt; This ran 1000 steps looking for all points within 2 negative log likelihood units of the best parameter values.</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Parameters: </span>
-<span class="co">#&gt;                     meanlog    sdlog</span>
-<span class="co">#&gt; best             0.80835452 3.206727</span>
-<span class="co">#&gt; lower.CI         0.17344308 2.808579</span>
-<span class="co">#&gt; upper.CI         1.44900754 3.696921</span>
-<span class="co">#&gt; lowest.examined  0.01865769 2.716789</span>
-<span class="co">#&gt; highest.examined 1.55223667 3.921917</span></code></pre></div>
+<span class="co">#&gt;                    meanlog    sdlog</span>
+<span class="co">#&gt; best             1.2897910 2.965568</span>
+<span class="co">#&gt; lower.CI         0.7125465 2.599978</span>
+<span class="co">#&gt; upper.CI         1.8699703 3.439620</span>
+<span class="co">#&gt; lowest.examined  0.5843611 2.512604</span>
+<span class="co">#&gt; highest.examined 2.0381225 3.585265</span></code></pre></div>
 <p>And also has a way to visualize the results:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">dented_results</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-summarized_results-1.png" width="100%"></p>
 <p>You do not need to use this package for simple distributions, but in phylogenetics, where programs like OUwie, corHMM, hisse, OUCH, and more give a point estimate, this lets you get confidence for the parameters if there’s a way to have a function where you pass in a set of parameter values and get back a negative log likelihood.</p>

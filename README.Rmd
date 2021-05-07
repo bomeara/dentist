@@ -65,7 +65,7 @@ print(best_par)
 
 But how confident should we be? For familiar distributions like a binomial distribution we can compute the confidence interval for a parameter estimate. For less familiar ones, we can approximate it using the curvature at the peak. Another approach is to vary one parameter at a time while holding others at their maximum likelihood estimate until the likelihood gets much worse (typically a cutoff of ∆2 log likelihood units is used). That can underestimate the uncertainty, since there could be a ridge in parameter space. A better approach would be to try many values and return all those within some specified likelihood bounds. This could be done with latin hypercubes, but it can be a large part of parameter space to explore. A different approach would be to focus on sampling points right at the boundary of "good enough." This package does this. If a likelihood surface is a peak, this package wants to sample points around a specified height below the peak to fully sample the uncertainty. It does it by "walking" with a Metropolis-Hastings algorithm around a dented likelihood surface, so that values better than the ideal threshold are reflected back. First, to show how the original surface (left) is dented (right):
 
-```{r awesomeness, echo=FALSE, , fig.height=8, fig.width=20}
+```{r awesomeness, echo=FALSE, , fig.height=8, fig.width=20, warning=FALSE, message=FALSE}
 meanlogs <- seq(from=0.1, to=2, length.out=100)
 sdlogs <- seq(from=2.5, to=4, length.out=100)
 params <- expand.grid(meanlog=meanlogs, sdlog=sdlogs)
