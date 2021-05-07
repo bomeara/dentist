@@ -57,7 +57,14 @@
   <a href="news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/bomeara/dentist/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -107,34 +114,34 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">best_par</span><span class="op">)</span>
 <span class="co">#&gt;   meanlog     sdlog </span>
-<span class="co">#&gt; 0.9891576 3.0608822</span></code></pre></div>
+<span class="co">#&gt; 0.8496578 2.6874693</span></code></pre></div>
 <p>But how confident should we be? For familiar distributions like a binomial distribution we can compute the confidence interval for a parameter estimate. For less familiar ones, we can approximate it using the curvature at the peak. Another approach is to vary one parameter at a time while holding others at their maximum likelihood estimate until the likelihood gets much worse (typically a cutoff of ∆2 log likelihood units is used). That can underestimate the uncertainty, since there could be a ridge in parameter space. A better approach would be to try many values and return all those within some specified likelihood bounds. This could be done with latin hypercubes, but it can be a large part of parameter space to explore. A different approach would be to focus on sampling points right at the boundary of “good enough.” This package does this. If a likelihood surface is a peak, this package wants to sample points around a specified height below the peak to fully sample the uncertainty. It does it by “walking” with a Metropolis-Hastings algorithm around a dented likelihood surface, so that values better than the ideal threshold are reflected back. First, to show how the original surface (left) is dented (right):</p>
 <p><img src="reference/figures/README-awesomeness-1.png" width="100%"></p>
 <p>Note that for plotting, it’s shown with the regular log likelihood: typically values &lt;&lt; 0, and higher is better. In the package, it wants you to use negative log likelihood, so it would be the mirror image of these plots (lower better).</p>
 <p>And now to sample around that ring on the right:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">dentist</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://bomeara.github.io/dentist/">dentist</a></span><span class="op">)</span>
  <span class="va">dented_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dent_walk.html">dent_walk</a></span><span class="op">(</span>par<span class="op">=</span><span class="va">best_par</span>, fn<span class="op">=</span><span class="va">dlnorm_to_run</span>, best_neglnL<span class="op">=</span><span class="va">best_neglnL</span>,  nsteps<span class="op">=</span><span class="fl">1000</span>, print_freq<span class="op">=</span><span class="fl">250</span>, sims<span class="op">=</span><span class="va">sims</span><span class="op">)</span>
 <span class="co">#&gt; [1] "Done replicate 250"</span>
 <span class="co">#&gt; [1] "CI of values"</span>
-<span class="co">#&gt;            X1        X2       X3</span>
-<span class="co">#&gt; [1,] 352.7942 0.4133952 2.706448</span>
-<span class="co">#&gt; [2,] 354.7909 1.4900110 3.509978</span>
+<span class="co">#&gt;            X1       X2       X3</span>
+<span class="co">#&gt; [1,] 325.7501 0.358857 2.367714</span>
+<span class="co">#&gt; [2,] 327.7347 1.286969 3.106623</span>
 <span class="co">#&gt; [1] "Done replicate 500"</span>
 <span class="co">#&gt; [1] "CI of values"</span>
-<span class="co">#&gt;            X1        X2       X3</span>
-<span class="co">#&gt; [1,] 352.7942 0.4133952 2.677327</span>
-<span class="co">#&gt; [2,] 354.7909 1.5661700 3.509978</span>
+<span class="co">#&gt;            X1       X2       X3</span>
+<span class="co">#&gt; [1,] 325.7501 0.358857 2.358058</span>
+<span class="co">#&gt; [2,] 327.7347 1.286969 3.106623</span>
 <span class="co">#&gt; [1] "Done replicate 750"</span>
 <span class="co">#&gt; [1] "CI of values"</span>
-<span class="co">#&gt;            X1        X2       X3</span>
-<span class="co">#&gt; [1,] 352.7942 0.3939106 2.677327</span>
-<span class="co">#&gt; [2,] 354.7909 1.5884634 3.548621</span>
+<span class="co">#&gt;            X1       X2       X3</span>
+<span class="co">#&gt; [1,] 325.7501 0.358857 2.358058</span>
+<span class="co">#&gt; [2,] 327.7347 1.376533 3.106623</span>
 <span class="co">#&gt; [1] "Done replicate 1000"</span>
 <span class="co">#&gt; [1] "CI of values"</span>
 <span class="co">#&gt;            X1        X2       X3</span>
-<span class="co">#&gt; [1,] 352.7942 0.3939106 2.677327</span>
-<span class="co">#&gt; [2,] 354.7909 1.5884634 3.548621</span></code></pre></div>
+<span class="co">#&gt; [1,] 325.7501 0.3272925 2.358058</span>
+<span class="co">#&gt; [2,] 327.7365 1.3765331 3.106623</span></code></pre></div>
 <p>This generates information about the confidence:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">dented_results</span><span class="op">)</span>
@@ -142,11 +149,11 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Parameters: </span>
 <span class="co">#&gt;                    meanlog    sdlog</span>
-<span class="co">#&gt; best             0.9891576 3.060882</span>
-<span class="co">#&gt; lower.CI         0.3939106 2.677327</span>
-<span class="co">#&gt; upper.CI         1.5884634 3.548621</span>
-<span class="co">#&gt; lowest.examined  0.1777087 2.583012</span>
-<span class="co">#&gt; highest.examined 1.8202164 3.706332</span></code></pre></div>
+<span class="co">#&gt; best             0.8496578 2.687469</span>
+<span class="co">#&gt; lower.CI         0.3272925 2.358058</span>
+<span class="co">#&gt; upper.CI         1.3765331 3.106623</span>
+<span class="co">#&gt; lowest.examined  0.1642158 2.267184</span>
+<span class="co">#&gt; highest.examined 1.4858718 3.325918</span></code></pre></div>
 <p>And also has a way to visualize the results:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">dented_results</span><span class="op">)</span></code></pre></div>
@@ -157,7 +164,16 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <div class="license">
+    <div class="links">
+<h2>Links</h2>
+<ul class="list-unstyled">
+<li>Browse source code at <br><a href="https://github.com/bomeara/dentist/">https://​github.com/​bomeara/​dentist/​</a>
+</li>
+<li>Report a bug at <br><a href="https://github.com/bomeara/dentist/issues">https://​github.com/​bomeara/​dentist/​issues</a>
+</li>
+</ul>
+</div>
+<div class="license">
 <h2>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>

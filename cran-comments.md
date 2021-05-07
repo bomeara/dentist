@@ -1,0 +1,3 @@
+This is the initial submission for this package. It has no errors, warnings, or notes when using devtools::check(); it also passed checks using github actions on macOS-latest (release), windows-latest (release and 3.6), ubuntu-18.04 (devel, release, oldrel, 3.5, 3.4, 3.3). 
+
+The goal of this package is to have a general way to estimate uncertainty: there are similar functions in packages I've coauthored like corHMM and hisse, but having this as a standalone reduces duplicate code between these packages, and this implementation is faster. I have tried to follow ropensci's style guide in its creation. 

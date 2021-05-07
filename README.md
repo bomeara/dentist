@@ -57,7 +57,7 @@ That gives us a point estimate of the best values:
 ``` r
 print(best_par)
 #>   meanlog     sdlog 
-#> 0.9891576 3.0608822
+#> 0.8496578 2.6874693
 ```
 
 But how confident should we be? For familiar distributions like a
@@ -93,24 +93,24 @@ library(dentist)
  dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, print_freq=250, sims=sims)
 #> [1] "Done replicate 250"
 #> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 352.7942 0.4133952 2.706448
-#> [2,] 354.7909 1.4900110 3.509978
+#>            X1       X2       X3
+#> [1,] 325.7501 0.358857 2.367714
+#> [2,] 327.7347 1.286969 3.106623
 #> [1] "Done replicate 500"
 #> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 352.7942 0.4133952 2.677327
-#> [2,] 354.7909 1.5661700 3.509978
+#>            X1       X2       X3
+#> [1,] 325.7501 0.358857 2.358058
+#> [2,] 327.7347 1.286969 3.106623
 #> [1] "Done replicate 750"
 #> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 352.7942 0.3939106 2.677327
-#> [2,] 354.7909 1.5884634 3.548621
+#>            X1       X2       X3
+#> [1,] 325.7501 0.358857 2.358058
+#> [2,] 327.7347 1.376533 3.106623
 #> [1] "Done replicate 1000"
 #> [1] "CI of values"
 #>            X1        X2       X3
-#> [1,] 352.7942 0.3939106 2.677327
-#> [2,] 354.7909 1.5884634 3.548621
+#> [1,] 325.7501 0.3272925 2.358058
+#> [2,] 327.7365 1.3765331 3.106623
 ```
 
 This generates information about the confidence:
@@ -121,11 +121,11 @@ print(dented_results)
 #> 
 #> Parameters: 
 #>                    meanlog    sdlog
-#> best             0.9891576 3.060882
-#> lower.CI         0.3939106 2.677327
-#> upper.CI         1.5884634 3.548621
-#> lowest.examined  0.1777087 2.583012
-#> highest.examined 1.8202164 3.706332
+#> best             0.8496578 2.687469
+#> lower.CI         0.3272925 2.358058
+#> upper.CI         1.3765331 3.106623
+#> lowest.examined  0.1642158 2.267184
+#> highest.examined 1.4858718 3.325918
 ```
 
 And also has a way to visualize the results:
