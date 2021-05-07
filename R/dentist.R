@@ -217,9 +217,9 @@ summary.dentist <- function(object, ...) {
 
 #' Print dentist
 #' print summary of output from dent_walk
-#' @param object An object of class dentist
+#' @param x An object of class dentist
 #' @param ... Other arguments (not used)
 #' @export
-print.dentist <- function(object, ...) {
-	summary.dentist(object,...)	
+print.dentist <- function(x, ...) {
+	summary.dentist(x,...)	
 }

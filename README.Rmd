@@ -1,0 +1,116 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# dentist
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+`dentist` is an R package to sample points around a specified distance from the maximum likelihood estimates. This should be a better way to estimate uncertainty than using the Hessian of the likelihood equation. It works by "denting" the likelihood surface to make a ridge at your desired ∆lnL and then "walks" around this dented surface, sampling points.
+
+
+## Installation
+
+
+And the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("bomeara/dentist")
+```
+## Example
+
+Imagine we had empirical data from some distribution:
+
+```{r empirical}
+sims <- stats::rlnorm(100, meanlog=1, sdlog=3)
+```
+
+We could write a function for the likelihood of the data and optimize this function:
+
+```{r optim}
+# Define the likelihood function
+
+ dlnorm_to_run <- function(par, sims) {
+   return(-sum(stats::dlnorm(sims, meanlog=par[1], sdlog=par[2], log=TRUE)))
+ }
+ 
+ # Optimize the model given the empirical data. We guess at the starting values
+ optimized_results <- stats::optim(c(meanlog=.5, sdlog=1), dlnorm_to_run, sims=sims)
+ best_par <- optimized_results$par
+ best_neglnL <- optimized_results$value
+```
+
+That gives us a point estimate of the best values:
+
+```{r estimate}
+print(best_par)
+```
+
+But how confident should we be? For familiar distributions like a binomial distribution we can compute the confidence interval for a parameter estimate. For less familiar ones, we can approximate it using the curvature at the peak. Another approach is to vary one parameter at a time while holding others at their maximum likelihood estimate until the likelihood gets much worse (typically a cutoff of ∆2 log likelihood units is used). That can underestimate the uncertainty, since there could be a ridge in parameter space. A better approach would be to try many values and return all those within some specified likelihood bounds. This could be done with latin hypercubes, but it can be a large part of parameter space to explore. A different approach would be to focus on sampling points right at the boundary of "good enough." This package does this. If a likelihood surface is a peak, this package wants to sample points around a specified height below the peak to fully sample the uncertainty. It does it by "walking" with a Metropolis-Hastings algorithm around a dented likelihood surface, so that values better than the ideal threshold are reflected back. First, to show how the original surface (left) is dented (right):
+
+```{r awesomeness, echo=FALSE}
+meanlogs <- seq(from=0.1, to=2, length.out=100)
+sdlogs <- seq(from=2.5, to=4, length.out=100)
+params <- expand.grid(meanlog=meanlogs, sdlog=sdlogs)
+true_likelihoods <- apply(params, 1, dlnorm_to_run, sims=sims)
+dented_likelihoods <- sapply(true_likelihoods, dentist::dent_likelihood, best_neglnL=min(true_likelihoods), delta=2)
+true_surface <- cbind(params, poslogL = -true_likelihoods)
+dented_surface <- cbind(params, poslogL = -dented_likelihoods)
+
+library(ggplot2)
+library(rayshader)
+par(mfrow=c(1,2))
+mountain_true <- ggplot(true_surface) +  
+  geom_tile(aes(x=meanlog, y=sdlog, fill=poslogL))  + 
+  geom_contour(aes(x = meanlog, y = sdlog, z = poslogL), color = "black") + 
+  scale_fill_gradientn("Z", colours = terrain.colors(10), limits=range(true_likelihoods)) +
+  coord_fixed() +  scale_fill_viridis_c(option = "A")
+plot_gg(mountain_true,raytrace=FALSE, theta=-20 )
+Sys.sleep(0.2)
+render_snapshot(clear = TRUE)
+
+mountain_dented <- ggplot(dented_surface) +  
+  geom_tile(aes(x=meanlog, y=sdlog, fill=poslogL))  + 
+  geom_contour(aes(x = meanlog, y = sdlog, z = poslogL), color = "black") + 
+  scale_fill_gradientn("Z", colours = terrain.colors(10), limits=range(true_likelihoods)) +
+  coord_fixed() +  scale_fill_viridis_c(option = "A")
+plot_gg(mountain_dented,raytrace=FALSE, theta=-20 )
+Sys.sleep(0.2)
+render_snapshot(clear = TRUE)
+```
+
+Note that for plotting, it's shown with the regular log likelihood: typically values << 0, and higher is better. In the package, it wants you to use negative log likelihood, so it would be the mirror image of these plots (lower better). 
+
+And now to sample around that ring on the right:
+
+```{r example}
+library(dentist)
+ dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, sims=sims)
+```
+
+This generates information about the confidence:
+
+```{r conf}
+print(dented_results)
+```
+
+And also has a way to visualize the results:
+
+```{r cars}
+plot(dented_results)
+```
+
+You do not need to use this package for simple distributions, but in phylogenetics, where programs like OUwie, corHMM, hisse, OUCH, and more give a point estimate, this lets you get confidence for the parameters if there's a way to have a function where you pass in a set of parameter values and get back a negative log likelihood. 

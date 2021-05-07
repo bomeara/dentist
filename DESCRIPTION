@@ -1,7 +1,7 @@
 Package: dentist
 Title: Dents the Likelihood Surface to Estimate Parameter
     Uncertainty
-Version: 0.0.0.9000
+Version: 0.0.1
 Authors@R: 
     person(given = "Brian",
            family = "O'Meara",
