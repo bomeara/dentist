@@ -13,6 +13,10 @@ It works by “denting” the likelihood surface to make a ridge at your
 desired ∆lnL and then “walks” around this dented surface, sampling
 points.
 
+<https://bomeara.github.io/dentist/> for a website
+
+<https://github.com/bomeara/dentist> for the source code
+
 ## Installation
 
 And the development version from [GitHub](https://github.com/) with:
@@ -50,8 +54,8 @@ That gives us a point estimate of the best values:
 
 ``` r
 print(best_par)
-#>  meanlog    sdlog 
-#> 1.225799 3.134044
+#>   meanlog     sdlog 
+#> 0.8083545 3.2067271
 ```
 
 But how confident should we be? For familiar distributions like a
@@ -75,10 +79,10 @@ to show how the original surface (left) is dented (right):
 
     #> Scale for 'fill' is already present. Adding another scale for 'fill', which
     #> will replace the existing scale.
-    #> Warning: Removed 1029 row(s) containing missing values (geom_path).
+    #> Warning: Removed 1107 row(s) containing missing values (geom_path).
     #> Scale for 'fill' is already present. Adding another scale for 'fill', which
     #> will replace the existing scale.
-    #> Warning: Removed 963 row(s) containing missing values (geom_path).
+    #> Warning: Removed 1167 row(s) containing missing values (geom_path).
 
 <img src="man/figures/README-awesomeness-1.png" width="100%" />
 
@@ -94,24 +98,24 @@ library(dentist)
  dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, print_freq=250, sims=sims)
 #> [1] "Done replicate 250"
 #> [1] "CI of values"
-#>            X1       X2       X3
-#> [1,] 378.6327 1.078291 2.828391
-#> [2,] 380.6262 1.840097 3.626785
+#>            X1        X2       X3
+#> [1,] 339.3336 0.1734431 2.830086
+#> [2,] 341.3192 0.9546115 3.665512
 #> [1] "Done replicate 500"
 #> [1] "CI of values"
 #>            X1        X2       X3
-#> [1,] 378.6327 0.6041034 2.798553
-#> [2,] 380.6262 1.8400972 3.626785
+#> [1,] 339.3336 0.1734431 2.830086
+#> [2,] 341.3192 1.2635862 3.665512
 #> [1] "Done replicate 750"
 #> [1] "CI of values"
 #>            X1        X2       X3
-#> [1,] 378.6327 0.6041034 2.762845
-#> [2,] 380.6262 1.8400972 3.626785
+#> [1,] 339.3336 0.1734431 2.808579
+#> [2,] 341.3192 1.3395447 3.665512
 #> [1] "Done replicate 1000"
 #> [1] "CI of values"
 #>            X1        X2       X3
-#> [1,] 378.6327 0.6041034 2.762845
-#> [2,] 380.6262 1.8400972 3.626785
+#> [1,] 339.3336 0.1734431 2.808579
+#> [2,] 341.3192 1.4490075 3.696921
 ```
 
 This generates information about the confidence:
@@ -121,12 +125,12 @@ print(dented_results)
 #> This ran 1000 steps looking for all points within 2 negative log likelihood units of the best parameter values.
 #> 
 #> Parameters: 
-#>                    meanlog    sdlog
-#> best             1.2257994 3.134044
-#> lower.CI         0.6041034 2.762845
-#> upper.CI         1.8400972 3.626785
-#> lowest.examined  0.4562914 2.680044
-#> highest.examined 2.0491200 3.806054
+#>                     meanlog    sdlog
+#> best             0.80835452 3.206727
+#> lower.CI         0.17344308 2.808579
+#> upper.CI         1.44900754 3.696921
+#> lowest.examined  0.01865769 2.716789
+#> highest.examined 1.55223667 3.921917
 ```
 
 And also has a way to visualize the results:
