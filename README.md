@@ -12,7 +12,7 @@
 from the maximum likelihood estimates. This should be a better way to
 estimate uncertainty than using the Hessian of the likelihood equation.
 It works by “denting” the likelihood surface to make a ridge at your
-desired ∆lnL and then “walks” around this dented surface, sampling
+desired delta lnL and then “walks” around this dented surface, sampling
 points.
 
 <https://bomeara.github.io/dentist/> for a website
@@ -56,8 +56,8 @@ That gives us a point estimate of the best values:
 
 ``` r
 print(best_par)
-#>   meanlog     sdlog 
-#> 0.8496578 2.6874693
+#>  meanlog    sdlog 
+#> 0.893797 2.955575
 ```
 
 But how confident should we be? For familiar distributions like a
@@ -65,10 +65,10 @@ binomial distribution we can compute the confidence interval for a
 parameter estimate. For less familiar ones, we can approximate it using
 the curvature at the peak. Another approach is to vary one parameter at
 a time while holding others at their maximum likelihood estimate until
-the likelihood gets much worse (typically a cutoff of ∆2 log likelihood
-units is used). That can underestimate the uncertainty, since there
-could be a ridge in parameter space. A better approach would be to try
-many values and return all those within some specified likelihood
+the likelihood gets much worse (typically a cutoff of delta 2 log
+likelihood units is used). That can underestimate the uncertainty, since
+there could be a ridge in parameter space. A better approach would be to
+try many values and return all those within some specified likelihood
 bounds. This could be done with latin hypercubes, but it can be a large
 part of parameter space to explore. A different approach would be to
 focus on sampling points right at the boundary of “good enough.” This
@@ -93,24 +93,24 @@ library(dentist)
  dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, print_freq=250, sims=sims)
 #> [1] "Done replicate 250"
 #> [1] "CI of values"
-#>            X1       X2       X3
-#> [1,] 325.7501 0.358857 2.367714
-#> [2,] 327.7347 1.286969 3.106623
+#>            X1        X2       X3
+#> [1,] 339.6352 0.6339612 2.626464
+#> [2,] 341.6350 1.4497321 3.418966
 #> [1] "Done replicate 500"
 #> [1] "CI of values"
-#>            X1       X2       X3
-#> [1,] 325.7501 0.358857 2.358058
-#> [2,] 327.7347 1.286969 3.106623
+#>            X1        X2       X3
+#> [1,] 339.6352 0.3506638 2.608558
+#> [2,] 341.6350 1.4884961 3.418966
 #> [1] "Done replicate 750"
 #> [1] "CI of values"
-#>            X1       X2       X3
-#> [1,] 325.7501 0.358857 2.358058
-#> [2,] 327.7347 1.376533 3.106623
+#>            X1        X2       X3
+#> [1,] 339.6352 0.3506638 2.608558
+#> [2,] 341.6350 1.4884961 3.418966
 #> [1] "Done replicate 1000"
 #> [1] "CI of values"
 #>            X1        X2       X3
-#> [1,] 325.7501 0.3272925 2.358058
-#> [2,] 327.7365 1.3765331 3.106623
+#> [1,] 339.6352 0.3326398 2.608558
+#> [2,] 341.6350 1.4884961 3.418966
 ```
 
 This generates information about the confidence:
@@ -120,12 +120,12 @@ print(dented_results)
 #> This ran 1000 steps looking for all points within 2 negative log likelihood units of the best parameter values.
 #> 
 #> Parameters: 
-#>                    meanlog    sdlog
-#> best             0.8496578 2.687469
-#> lower.CI         0.3272925 2.358058
-#> upper.CI         1.3765331 3.106623
-#> lowest.examined  0.1642158 2.267184
-#> highest.examined 1.4858718 3.325918
+#>                     meanlog    sdlog
+#> best             0.89379698 2.955575
+#> lower.CI         0.33263978 2.608558
+#> upper.CI         1.48849614 3.418966
+#> lowest.examined  0.04736823 2.491895
+#> highest.examined 1.60055403 3.560104
 ```
 
 And also has a way to visualize the results:
