@@ -15,6 +15,7 @@
 #' @param print_freq Output progress every print_freq steps.
 #' @param lower_bound Minimum parameter values to try. One for all or a vector of the length of par.
 #' @param upper_bound Maximum parameter values to try. One for all or a vector of the length of par.
+#' @param adjust_width_interval When to try automatically adjusting proposal widths
 #' @param ... Other arguments to fn. 
 #' @return A dentist object containing results, the data.frame of negative log likelihoods and the parameters associated with them; acceptances, the vector of whether a proposed move was accepted each step; best_neglnL, the best value passed into the analysis; delta, the desired offset; all_ranges, a summary of the results.
 #' @export
@@ -51,42 +52,44 @@
 #' 
 #' dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL, sims=sims)
 #' plot(dented_results)
-dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, ...) {
+dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, adjust_width_interval=100, ...) {
   results <- data.frame(matrix(NA, nrow=nsteps+1, ncol=length(par)+1))
   results[1,] <- c(best_neglnL, par)
   sd_vector <- 0.1*par
   acceptances <- rep(NA, nsteps)
+  old_params <- par
   for (rep_index in sequence(nsteps)) {
-    old_params <- as.numeric(results[rep_index,-1])
     new_params <- dent_propose(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd_vector) 
     new_neglnL <- fn(par=new_params, ...)
     
     new_dented_neglnL <- dent_likelihood(new_neglnL, best_neglnL, delta)
     old_dented_neglnL <- dent_likelihood(results[rep_index,][1], best_neglnL, delta)
     
-    
+    results[rep_index+1,] <- c(new_neglnL, new_params)
+  
     if(new_dented_neglnL<=old_dented_neglnL) {
-      results[rep_index+1,] <- c(new_neglnL, new_params)
+	  old_params <- new_params
       acceptances[rep_index]<-TRUE
     } else {
       if(new_dented_neglnL-old_dented_neglnL < stats::runif(1)) {
-        results[rep_index+1,] <- c(new_neglnL, new_params)
+		old_params <- new_params
         acceptances[rep_index]<-TRUE
       } else {
-        results[rep_index+1,] <- results[rep_index,]
         acceptances[rep_index]<-FALSE
       }
     }
-    if(rep_index%%100==0) { # adaptively change proposal width for all params at once
-      acceptances_run <- utils::tail(acceptances[!is.na(acceptances)],100)
+    if(rep_index%%adjust_width_interval==0) { # adaptively change proposal width for all params at once
+      acceptances_run <- utils::tail(acceptances[!is.na(acceptances)],adjust_width_interval)
       if(sum(acceptances_run)/length(acceptances_run) > 0.3) {
         sd_vector <- sd_vector * 1.5
+		print("increasing proposal width for all parameters")
       }
       if(sum(acceptances_run)/length(acceptances_run) < 0.1) {
         sd_vector <- sd_vector * 0.8
+		print("decreasing proposal width for all parameters")
       }     
     }
-    if(rep_index%%200==0) { # if we haven't found values of some parameters that are outside the CI, widen the search for just those
+    if(rep_index%%(2*adjust_width_interval)==0) { # if we haven't found values of some parameters that are outside the CI, widen the search for just those
       good_enough_results_range <- apply(results[which(results[1:(rep_index+1),1]-min(results[1:(rep_index+1),1])<=delta),], 2, range)[,-1]
       all_results_range <- apply(results[1:(rep_index+1),], 2, range)[,-1]
 	  not_past_bounds <- rep(FALSE, ncol(results)-1)
@@ -96,6 +99,7 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
 		not_past_bounds <- any(all_results_range==good_enough_results_range) # single parameter
 	  }
       if(any(not_past_bounds)) {
+		print("increasing proposal width for some parameters")
         sd_vector[not_past_bounds] <- sd_vector[not_past_bounds]*1.5
       }
     }
@@ -103,7 +107,7 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
       print(paste("Done replicate",rep_index))
       print("CI of values")
       intermediate_results <- apply(results[which(results[1:(rep_index+1),1]-min(results[1:(rep_index+1),1])<=delta),], 2, range)
-      #colnames(intermediate_results) <- c("neglnL", names(par))
+      try(colnames(intermediate_results) <- c("neglnL", names(par)))
       print(intermediate_results)
     }
   }
@@ -135,9 +139,19 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
 #' @param sd Standard deviation to use for the proposals. One for all or a vector of the length of par.
 #' @return A vector of the new parameter values
 dent_propose <- function(old_params, lower_bound=0, upper_bound=Inf, sd=1) {
-  new_params <- stats::rnorm(length(old_params), old_params, sd)
-  while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
-    new_params <- stats::rnorm(length(old_params), old_params, sd)
+  if(runif(1)<0.5) { #try changing all
+	new_params <- stats::rnorm(length(old_params), old_params, sd)
+	while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
+		new_params <- stats::rnorm(length(old_params), old_params, sd)
+	}
+  } else {
+	new_params <- old_params
+	focal <- sample.int(length(old_params),1)
+	new_params[focal] <- stats::rnorm(1, old_params[focal], ifelse(length(sd)==1,sd, sd[focal]))  
+	while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
+		new_params <- old_params
+		new_params[focal] <- stats::rnorm(1, old_params[focal], ifelse(length(sd)==1,sd, sd[focal]))  
+	}
   }
   return(new_params)
 }

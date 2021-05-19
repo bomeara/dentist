@@ -15,6 +15,7 @@ dent_walk(
   print_freq = 50,
   lower_bound = 0,
   upper_bound = Inf,
+  adjust_width_interval = 100,
   ...
 )
 }
@@ -34,6 +35,8 @@ dent_walk(
 \item{lower_bound}{Minimum parameter values to try. One for all or a vector of the length of par.}
 
 \item{upper_bound}{Maximum parameter values to try. One for all or a vector of the length of par.}
+
+\item{adjust_width_interval}{When to try automatically adjusting proposal widths}
 
 \item{...}{Other arguments to fn.}
 }
