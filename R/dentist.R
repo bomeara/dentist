@@ -16,6 +16,7 @@
 #' @param lower_bound Minimum parameter values to try. One for all or a vector of the length of par.
 #' @param upper_bound Maximum parameter values to try. One for all or a vector of the length of par.
 #' @param adjust_width_interval When to try automatically adjusting proposal widths
+#' @param badval Bad negative log likelihood to return if a non-finite likelihood is returned
 #' @param ... Other arguments to fn. 
 #' @return A dentist object containing results, the data.frame of negative log likelihoods and the parameters associated with them; acceptances, the vector of whether a proposed move was accepted each step; best_neglnL, the best value passed into the analysis; delta, the desired offset; all_ranges, a summary of the results.
 #' @export
@@ -52,32 +53,42 @@
 #' 
 #' dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL, sims=sims)
 #' plot(dented_results)
-dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, adjust_width_interval=100, ...) {
+dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, adjust_width_interval=100, badval=1e9, ...) {
   results <- data.frame(matrix(NA, nrow=nsteps+1, ncol=length(par)+1))
   results[1,] <- c(best_neglnL, par)
-  sd_vector <- 0.1*par
+  sd_vector <- 0.1*abs(par)
+  sd_vector_positive <- sd_vector[which(sd_vector>0)]
+  sd_vector[sd_vector==0] <- 0.5*min(sd_vector_positive)
   acceptances <- rep(NA, nsteps)
   old_params <- par
+  old_dented_neglnL <- dent_likelihood(best_neglnL, best_neglnL, delta)
+
   for (rep_index in sequence(nsteps)) {
     new_params <- dent_propose(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd_vector) 
     new_neglnL <- fn(par=new_params, ...)
+   
+   	if(!is.finite(new_neglnL)) {
+		new_neglnL <- max(badval, 10+10*abs(best_neglnL))
+	}
     
     new_dented_neglnL <- dent_likelihood(new_neglnL, best_neglnL, delta)
-    old_dented_neglnL <- dent_likelihood(results[rep_index,][1], best_neglnL, delta)
-    
+	
+
     results[rep_index+1,] <- c(new_neglnL, new_params)
-  
-    if(new_dented_neglnL<=old_dented_neglnL) {
-	  old_params <- new_params
-      acceptances[rep_index]<-TRUE
-    } else {
-      if(new_dented_neglnL-old_dented_neglnL < stats::runif(1)) {
-		old_params <- new_params
-        acceptances[rep_index]<-TRUE
-      } else {
-        acceptances[rep_index]<-FALSE
-      }
-    }
+	if(new_dented_neglnL<=old_dented_neglnL) {
+	old_params <- new_params
+	acceptances[rep_index]<-TRUE
+	old_dented_neglnL <- new_dented_neglnL
+	} else {
+		if(new_dented_neglnL-old_dented_neglnL < stats::runif(1)) {
+			old_params <- new_params
+			acceptances[rep_index]<-TRUE
+			old_dented_neglnL <- new_dented_neglnL
+		} else {
+			acceptances[rep_index]<-FALSE
+		}
+	}
+
     if(rep_index%%adjust_width_interval==0) { # adaptively change proposal width for all params at once
       acceptances_run <- utils::tail(acceptances[!is.na(acceptances)],adjust_width_interval)
       if(sum(acceptances_run)/length(acceptances_run) > 0.3) {
