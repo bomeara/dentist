@@ -16,6 +16,9 @@ dent_walk(
   lower_bound = 0,
   upper_bound = Inf,
   adjust_width_interval = 100,
+  badval = 1e+09,
+  sd_vector = NULL,
+  debug = FALSE,
   ...
 )
 }
@@ -37,6 +40,12 @@ dent_walk(
 \item{upper_bound}{Maximum parameter values to try. One for all or a vector of the length of par.}
 
 \item{adjust_width_interval}{When to try automatically adjusting proposal widths}
+
+\item{badval}{Bad negative log likelihood to return if a non-finite likelihood is returned}
+
+\item{sd_vector}{Vector of the standard deviations to use for proposals. Generated automatically if NULL}
+
+\item{debug}{If TRUE, prints out much more information during a run}
 
 \item{...}{Other arguments to fn.}
 }
