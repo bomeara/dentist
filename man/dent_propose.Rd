@@ -5,7 +5,7 @@
 \title{Propose new values
 This proposes new values using a normal distribution centered on the original parameter values, with desired standard deviation. If any proposed values are outside the bounds, it will propose again.}
 \usage{
-dent_propose(old_params, lower_bound = 0, upper_bound = Inf, sd = 1)
+dent_propose(old_params, lower_bound = -Inf, upper_bound = Inf, sd = 1)
 }
 \arguments{
 \item{old_params}{The original parameter values}

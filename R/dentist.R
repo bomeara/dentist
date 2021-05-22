@@ -198,25 +198,19 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
 #' @param upper_bound Maximum parameter values to try. One for all or a vector of the length of par.
 #' @param sd Standard deviation to use for the proposals. One for all or a vector of the length of par.
 #' @return A vector of the new parameter values
-dent_propose <- function(old_params, lower_bound=0, upper_bound=Inf, sd=1) {
-	sd <- abs(sd)
+dent_propose <- function(old_params, lower_bound=-Inf, upper_bound=Inf, sd=1) {
+  sd <- abs(sd)
   if(runif(1)<0.1) { #try changing all
 	new_params <- stats::rnorm(length(old_params), old_params, sd)
-	while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
-		sd <- sd*0.1
-		new_params <- stats::rnorm(length(old_params), old_params, sd)
-	}
   } else { #try sampling some but not all. Usually just one.
 	new_params <- old_params
 	focal <- sample.int(length(old_params),min(length(old_params), ceiling(stats::rexp(1, 1/2))))
 	new_params[focal] <- stats::rnorm(1, old_params[focal], ifelse(length(sd)==1,sd, sd[focal]))  
-	while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
-		sd <- sd*0.1
-
-		new_params <- old_params
-		new_params[focal] <- stats::rnorm(1, old_params[focal], ifelse(length(sd)==1,sd, sd[focal]))  
-	}
   }
+  	while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
+		sd <- sd*0.1
+		new_params <- dent_propose(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd)
+	}
   return(new_params)
 }
 

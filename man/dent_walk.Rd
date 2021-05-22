@@ -19,6 +19,7 @@ dent_walk(
   badval = 1e+09,
   sd_vector = NULL,
   debug = FALSE,
+  restart_after = 50,
   ...
 )
 }
@@ -46,6 +47,8 @@ dent_walk(
 \item{sd_vector}{Vector of the standard deviations to use for proposals. Generated automatically if NULL}
 
 \item{debug}{If TRUE, prints out much more information during a run}
+
+\item{restart_after}{Sometimes the search can get stuck outside the good region but still accept moves. After this many steps without being inside the good region, restart from one of the past good points}
 
 \item{...}{Other arguments to fn.}
 }
