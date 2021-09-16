@@ -109,6 +109,10 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
 	
 
     results[rep_index+1,] <- c(new_neglnL, new_params)
+	if(debug) {
+		print(results[rep_index+1,] )
+		print(paste0("old_dented_neglnL: ", old_dented_neglnL, " new_dented_neglnL: ", new_dented_neglnL))
+	}
 	if(new_dented_neglnL<=old_dented_neglnL) {
 		old_params <- new_params
 		acceptances[rep_index]<-TRUE
