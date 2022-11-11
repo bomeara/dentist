@@ -20,6 +20,7 @@
 #' @param sd_vector Vector of the standard deviations to use for proposals. Generated automatically if NULL
 #' @param restart_after Sometimes the search can get stuck outside the good region but still accept moves. After this many steps without being inside the good region, restart from one of the past good points
 #' @param debug If TRUE, prints out much more information during a run
+#' @param quiet If TRUE, will quiet the likelihood function outputs
 #' @param ... Other arguments to fn. 
 #' @return A dentist object containing results, the data.frame of negative log likelihoods and the parameters associated with them; acceptances, the vector of whether a proposed move was accepted each step; best_neglnL, the best value passed into the analysis; delta, the desired offset; all_ranges, a summary of the results.
 #' @export
@@ -56,7 +57,7 @@
 #' 
 #' dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL, sims=sims)
 #' plot(dented_results)
-dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, adjust_width_interval=100, badval=1e9, sd_vector=NULL, debug=FALSE, restart_after=50, ...) {
+dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, adjust_width_interval=100, badval=1e9, sd_vector=NULL, debug=FALSE, restart_after=50, quiet=TRUE, ...) {
   results <- data.frame(matrix(NA, nrow=nsteps+1, ncol=length(par)+1))
   results[1,] <- c(best_neglnL, par)
   if(is.null(sd_vector[1])) {
@@ -87,7 +88,12 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
 	
     new_params <- dent_propose(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd_vector) 
 	
-    new_neglnL <- fn(par=new_params, ...)
+    if(quiet){
+      new_neglnL <- quiet_fn(fn(par=new_params, ...))
+    }else{
+      new_neglnL <- fn(par=new_params, ...)
+    }
+    
    
    	if(!is.finite(new_neglnL)) {
 		new_neglnL <- max(badval, 10+10*abs(best_neglnL))
@@ -299,3 +305,12 @@ summary.dentist <- function(object, ...) {
 print.dentist <- function(x, ...) {
 	summary.dentist(x,...)	
 }
+
+#' Quiet internal functions
+#' @param x A function to be quieted
+quiet_fn <- function(x) { 
+  sink(tempfile()) 
+  on.exit(sink()) 
+  invisible(force(x)) 
+} 
+
