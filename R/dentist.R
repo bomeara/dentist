@@ -135,6 +135,7 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
 
     if(rep_index%%adjust_width_interval==0) { # adaptively change proposal width for all params at once
 	  sd_original <- sd_vector
+	  # test code
       acceptances_run <- utils::tail(acceptances[!is.na(acceptances)],adjust_width_interval)
       if(sum(acceptances_run)/length(acceptances_run) > 0.3) {
         sd_vector <- sd_vector * 1.5
