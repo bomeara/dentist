@@ -20,6 +20,7 @@ dent_walk(
   sd_vector = NULL,
   debug = FALSE,
   restart_after = 50,
+  quiet = TRUE,
   ...
 )
 }
@@ -49,6 +50,8 @@ dent_walk(
 \item{debug}{If TRUE, prints out much more information during a run}
 
 \item{restart_after}{Sometimes the search can get stuck outside the good region but still accept moves. After this many steps without being inside the good region, restart from one of the past good points}
+
+\item{quiet}{If TRUE, will mute any print screens from the internal function calculating the likelihood except for warnings.}
 
 \item{...}{Other arguments to fn.}
 }

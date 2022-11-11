@@ -71,7 +71,7 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
   rep_index <- 0
   nsteps_original <- nsteps
   steps_since_in_region <- 0
-  while (rep_index <= nsteps) {
+  while (rep_index < nsteps) {
 	rep_index <- rep_index+1
 	if(steps_since_in_region>restart_after) {
 		if(debug) {
