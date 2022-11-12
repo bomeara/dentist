@@ -12,6 +12,7 @@
 #' @param best_neglnL The negative log likelihood at the optimum; other values will be greater than this.
 #' @param delta How far from the optimal negative log likelihood to focus samples
 #' @param nsteps How many steps to take in the analysis
+#' @param scale_factor ranging from 0 to 1, how much should the adaptive covariance structure be scaled towards independence
 #' @param print_freq Output progress every print_freq steps.
 #' @param lower_bound Minimum parameter values to try. One for all or a vector of the length of par.
 #' @param upper_bound Maximum parameter values to try. One for all or a vector of the length of par.
@@ -57,7 +58,7 @@
 #' 
 #' dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL, sims=sims)
 #' plot(dented_results)
-dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, adjust_width_interval=100, badval=1e9, sd_vector=NULL, debug=FALSE, restart_after=50, quiet=TRUE, ...) {
+dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, scale_factor=0.1, print_freq=50, lower_bound=0, upper_bound=Inf, adjust_width_interval=100, badval=1e9, sd_vector=NULL, debug=FALSE, restart_after=50, quiet=TRUE, ...) {
   results <- data.frame(matrix(NA, nrow=nsteps+1, ncol=length(par)+1))
   results[1,] <- c(best_neglnL, par)
   if(is.null(sd_vector[1])) {
@@ -65,13 +66,15 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
   }
   sd_vector_positive <- sd_vector[which(sd_vector>0)]
   sd_vector[sd_vector==0] <- 0.5*min(sd_vector_positive)
+  Sigma <- matrix(0, length(par), length(par))
+  diag(Sigma) <- sd_vector^2
   acceptances <- rep(NA, nsteps)
   old_params <- par
   old_dented_neglnL <- dent_likelihood(best_neglnL, best_neglnL, delta)
   rep_index <- 0
   nsteps_original <- nsteps
   steps_since_in_region <- 0
-  while (rep_index < nsteps) {
+  while (rep_index <= nsteps) {
 	rep_index <- rep_index+1
 	if(steps_since_in_region>restart_after) {
 		if(debug) {
@@ -86,7 +89,7 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
 		old_dented_neglnL <- dent_likelihood(results[chosen_good,1], best_neglnL, delta)
 	}
 	
-    new_params <- dent_propose(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd_vector) 
+    new_params <- dent_propose_mv(old_params, lower_bound=lower_bound, upper_bound=upper_bound, Sigma=Sigma) 
 	
     if(quiet){
       new_neglnL <- quiet_fn(fn(par=new_params, ...))
@@ -134,46 +137,61 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
 	}
 
     if(rep_index%%adjust_width_interval==0) { # adaptively change proposal width for all params at once
-	  sd_original <- sd_vector
+	  # sd_original <- sd_vector
+    Sigma_original <- Sigma
 	  # test code
       acceptances_run <- utils::tail(acceptances[!is.na(acceptances)],adjust_width_interval)
-      if(sum(acceptances_run)/length(acceptances_run) > 0.3) {
-        sd_vector <- sd_vector * 1.5
-		print("increasing proposal width for all parameters")
-		if(debug) {
-			print("changed proposals")
-			print(data.frame(old=sd_original, new=sd_vector))	
-		}
-      }
-      if(sum(acceptances_run)/length(acceptances_run) < 0.1) {
-
-        sd_vector <- sd_vector * 0.8
-		print("decreasing proposal width for all parameters")
-		if(debug) {
-			print("changed proposals")
-			print(data.frame(old=sd_original, new=sd_vector))	
-		}
-      }     
+      # accepted_results <- results[-1,][which(na.omit(acceptances)),]
+      # if(dim(accepted_results)[1] > (0.1 * nsteps)){
+      #   Sigma <- cov(accepted_results[,-1]) * scale_factor
+      #   diag(Sigma) <- diag(Sigma_original)
+      # }
+      Sigma <- round(cov(results[,-1][2:rep_index,]), 3)
+      diag(Sigma) <- diag(Sigma_original)
+#       if(sum(acceptances_run)/length(acceptances_run) > 0.3) {
+#         # sd_vector <- sd_vector * 1.5
+#         diag(Sigma) <- diag(Sigma) * 1.5
+# 		print("increasing proposal width for all parameters")
+# 		if(debug) {
+# 			print("changed proposals")
+# 			print(data.frame(old=sd_original, new=sd_vector))	
+# 		}
+#       }
+#       if(sum(acceptances_run)/length(acceptances_run) < 0.1) {
+#         # sd_vector <- sd_vector * 0.8
+#         diag(Sigma) <- diag(Sigma) * 0.8
+# 		print("decreasing proposal width for all parameters")
+# 		if(debug) {
+# 			print("changed proposals")
+# 			print(data.frame(old=sd_original, new=sd_vector))	
+# 		}
+#       }
+      print("changed Sigma")
+      print(round(Sigma, 3))
     }
-    if(rep_index%%(2*adjust_width_interval)==0) { # if we haven't found values of some parameters that are outside the CI, widen the search for just those
-	  sd_original <- sd_vector
-      good_enough_results_range <- apply(results[which(results[1:(rep_index+1),1]-min(results[1:(rep_index+1),1])<=delta),], 2, range)[,-1]
-      all_results_range <- apply(results[1:(rep_index+1),], 2, range)[,-1]
-	  not_past_bounds <- rep(FALSE, ncol(results)-1)
-	  if(!is.null(dim(all_results_range))) {
-		not_past_bounds <- apply(all_results_range==good_enough_results_range, 2, any)
-	  } else {
-		not_past_bounds <- any(all_results_range==good_enough_results_range) # single parameter
-	  }
-      if(any(not_past_bounds)) {
-		print("increasing proposal width for some parameters")
-        sd_vector[not_past_bounds] <- sd_vector[not_past_bounds]*1.5
-		if(debug) {
-			print("changed proposals")
-			print(data.frame(old=sd_original[not_past_bounds], new=sd_vector[not_past_bounds]))	
-		}
-      }
-    }
+#     if(rep_index%%(2*adjust_width_interval)==0) { # if we haven't found values of some parameters that are outside the CI, widen the search for just those
+# 	  # sd_original <- sd_vector
+#     Sigma_original <- Sigma
+#     # Sigma <- 0 # reset the covariance structure to 0
+#     # diag(Sigma) <- diag(Sigma_original)
+#     good_enough_results_range <- apply(results[which(results[1:(rep_index+1),1]-min(results[1:(rep_index+1),1])<=delta),], 2, range)[,-1]
+#       all_results_range <- apply(results[1:(rep_index+1),], 2, range)[,-1]
+# 	  not_past_bounds <- rep(FALSE, ncol(results)-1)
+# 	  if(!is.null(dim(all_results_range))) {
+# 		not_past_bounds <- apply(all_results_range==good_enough_results_range, 2, any)
+# 	  } else {
+# 		not_past_bounds <- any(all_results_range==good_enough_results_range) # single parameter
+# 	  }
+#       if(any(not_past_bounds)) {
+# 		print("increasing proposal width for some parameters")
+#         # sd_vector[not_past_bounds] <- sd_vector[not_past_bounds]*1.5
+#         diag(Sigma) <- diag(Sigma)*1.5
+# 		if(debug) {
+# 			print("changed proposals")
+# 			# print(data.frame(old=diag(Sigma_original)[not_past_bounds], new=diag(Sigma)[not_past_bounds]))
+# 		}
+#       }
+#     }
     if(rep_index%%print_freq==0) {
       print(paste("Done replicate",rep_index))
       intermediate_results <- apply(results[which(results[1:(rep_index+1),1]-min(results[1:(rep_index+1),1])<=delta),], 2, range)
@@ -211,7 +229,7 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
 #' @return A vector of the new parameter values
 dent_propose <- function(old_params, lower_bound=-Inf, upper_bound=Inf, sd=1) {
   sd <- abs(sd)
-  if(runif(1)<0.1) { #try changing all
+  if(runif(1)<1.1) { #try changing all
 	new_params <- stats::rnorm(length(old_params), old_params, sd)
   } else { #try sampling some but not all. Usually just one.
 	new_params <- old_params
@@ -222,6 +240,26 @@ dent_propose <- function(old_params, lower_bound=-Inf, upper_bound=Inf, sd=1) {
 		sd <- sd*0.1
 		new_params <- dent_propose(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd)
 	}
+  return(new_params)
+}
+
+#' Propose new values multivariate normal
+#' This proposes new values using a normal distribution centered on the original parameter values, with desired standard deviation. If any proposed values are outside the bounds, it will propose again.
+#' @param old_params The original parameter values
+#' @param lower_bound Minimum parameter values to try. One for all or a vector of the length of par.
+#' @param upper_bound Maximum parameter values to try. One for all or a vector of the length of par.
+#' @param Sigma VCV to use for the proposals. NULL sets variance to 1 
+#' @return A vector of the new parameter values
+dent_propose_mv <- function(old_params, lower_bound=-Inf, upper_bound=Inf, Sigma=NULL) {
+  if(is.null(Sigma)){
+    Sigma <- matrix(0, length(old_params), length(old_params))
+    diag(Sigma) <- 1
+  }
+  new_params <- MASS::mvrnorm(1, old_params, Sigma)
+  while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
+    diag(Sigma) <- (sqrt(diag(Sigma)) * 0.1)^2
+    new_params <- dent_propose_mv(old_params, lower_bound=lower_bound, upper_bound=upper_bound, Sigma=Sigma)
+  }
   return(new_params)
 }
 
@@ -262,7 +300,7 @@ dent_likelihood <- function(neglnL, best_neglnL, delta=2) {
 #' @param x An object of class dentist
 #' @param ... Other arguments to pass to plot
 #' @export
-plot.dentist <- function(x, ...) {
+plot.dentist <- function(x, local.only=FALSE, ...) {
 	nparams <- ncol(x$results)-1
 	nplots <- nparams + (nparams^2 - nparams)/2
 	results <- x$results
@@ -272,14 +310,29 @@ plot.dentist <- function(x, ...) {
 	results_inside <- subset(results, results$color=="black")
 	graphics::par(mfrow=c(ceiling(nplots/nparams), nparams))
 	for (i in sequence(nparams)) {
-		plot(results[,i+1], results[,1], pch=20, col=results$color, main=colnames(results)[i+1], xlab=colnames(results)[i+1], ylab="Negative Log Likelihood", bty="n", ...)
+	  if(local.only){
+	    xlim=range(results_inside[,i+1])
+	    ylim=c(range(results_inside[,1]))
+	    ylim[2] <- 2*ylim[2]
+	  }else{
+	    xlim=range(c(results_inside[,i+1]), results_outside[,i+1])
+	    ylim=c(range(c(results_inside[,1], results_outside[,1])))
+	  }
+		plot(results[,i+1], results[,1], pch=20, col=results$color, main=colnames(results)[i+1], xlab=colnames(results)[i+1], ylab="Negative Log Likelihood", bty="n", xlim=xlim, ylim=ylim, ...)
 		graphics::abline(h=threshold, col="blue")
 		graphics::points(results[which.min(results[,1]), i+1], results[which.min(results[,1]),1], pch=21, col="red")
 	}
 	for (i in sequence(nparams)) {
 		for (j in sequence(nparams)) {
 			if(j>i) {
-				plot(results_outside[,i+1], results_outside[,j+1], pch=20, col=results_outside$color, xlab=colnames(results)[i+1], ylab=colnames(results)[j+1], bty="n", main=paste0(colnames(results)[j+1], " vs. ", colnames(results)[i+1]), ...)
+			  if(local.only){
+			    xlim=range(results_inside[,i+1])
+			    ylim=range(results_inside[,j+1])
+			  }else{
+			    xlim=range(c(results_inside[,i+1]), results_outside[,i+1])
+			    ylim=range(c(results_inside[,j+1]), results_outside[,j+1])
+			  }
+				plot(results_outside[,i+1], results_outside[,j+1], pch=20, col=results_outside$color, xlab=colnames(results)[i+1], ylab=colnames(results)[j+1], bty="n", main=paste0(colnames(results)[j+1], " vs. ", colnames(results)[i+1]), xlim=xlim, ylim=ylim, ...)
 				graphics::points(results_inside[,i+1], results_inside[,j+1], pch=20, col=results_inside$color)
 				graphics::points(results[which.min(results[,1]), i+1], results[which.min(results[,1]),j+1], pch=21, col="red")
 			}
