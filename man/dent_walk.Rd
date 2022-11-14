@@ -21,6 +21,7 @@ dent_walk(
   debug = FALSE,
   restart_after = 50,
   quiet = TRUE,
+  sphere_probability = 0,
   ...
 )
 }
@@ -51,7 +52,7 @@ dent_walk(
 
 \item{restart_after}{Sometimes the search can get stuck outside the good region but still accept moves. After this many steps without being inside the good region, restart from one of the past good points}
 
-\item{quiet}{If TRUE, will mute any print screens from the internal function calculating the likelihood except for warnings.}
+\item{quiet}{If TRUE, will quiet the likelihood function outputs}
 
 \item{...}{Other arguments to fn.}
 }

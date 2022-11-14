@@ -57,7 +57,7 @@
 #' 
 #' dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL, sims=sims)
 #' plot(dented_results)
-dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, adjust_width_interval=100, badval=1e9, sd_vector=NULL, debug=FALSE, restart_after=50, quiet=TRUE, ...) {
+dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, adjust_width_interval=100, badval=1e9, sd_vector=NULL, debug=FALSE, restart_after=50, quiet=TRUE, sphere_probability=0, ...) {
   results <- data.frame(matrix(NA, nrow=nsteps+1, ncol=length(par)+1))
   results[1,] <- c(best_neglnL, par)
   if(is.null(sd_vector[1])) {
@@ -86,7 +86,12 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
 		old_dented_neglnL <- dent_likelihood(results[chosen_good,1], best_neglnL, delta)
 	}
 	
-    new_params <- dent_propose(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd_vector) 
+	new_params <- NULL
+	if(runif(1)>sphere_probability) {
+    	new_params <- dent_propose(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd_vector)
+	} else {
+		new_params <- sphere_propose(results, delta, old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd_vector)	
+	}
 	
     if(quiet){
       new_neglnL <- quiet_fn(fn(par=new_params, ...))
@@ -179,6 +184,7 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
 	  print(paste0("CI of values (the ", length(which(results[1:(rep_index+1),1]-min(results[1:(rep_index+1),1])<=delta)), " replicates within ", delta, " neglnL of the optimum)"))
       try(colnames(intermediate_results) <- c("neglnL", names(par)))
       print(intermediate_results)
+	  print(paste0("Rough volume of good region is ", prod(abs(apply(apply(intermediate_results[,-1,drop=FALSE], 2, range), 2, diff)))))
     }
   }
   colnames(results) <- c("neglnL", names(par))
@@ -221,6 +227,38 @@ dent_propose <- function(old_params, lower_bound=-Inf, upper_bound=Inf, sd=1) {
   	while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
 		sd <- sd*0.1
 		new_params <- dent_propose(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd)
+	}
+  return(new_params)
+}
+
+#' Propose new values based on points near bounds
+#' This proposes new values based on wiggling a little bit away from the values near the bounds of the good region
+#' @param results Data.frame of results so far
+#' @param delta The maximum distance from the best value to consider
+#' @param old_params The original parameter values
+#' @param lower_bound Minimum parameter values to try. One for all or a vector of the length of par.
+#' @param upper_bound Maximum parameter values to try. One for all or a vector of the length of par.
+#' @param sd Standard deviation to use for the proposals. One for all or a vector of the length of par.
+#' @return A vector of the new parameter values
+sphere_propose <- function(results, delta, old_params, lower_bound=-Inf, upper_bound=Inf, sd=1) {
+  results <- results[which(!is.na(results[,1])),]
+  sd <- abs(sd)
+  distances <- abs(results[,1]-(min(results[,1])+delta))
+  sampleprobs <- max(distances)-distances #so we bias towards points that are near min lnL + delta
+  sampleprobs <- sampleprobs + 1 # to flatten it out; also helps with corner case of having only one sample
+  new_params <- stats::rnorm(length(old_params), results[sample.int(nrow(results), 1, prob=sampleprobs),-1], sd)
+  #new_params <- stats::rnorm(length(old_params), old_params, sd)
+#   if(runif(1)<0.1) { #try changing all
+# 	new_params <- stats::rnorm(length(old_params), old_params, sd)
+#   } else { #try sampling some but not all. Usually just one.
+# 	new_params <- old_params
+# 	focal <- sample.int(length(old_params),min(length(old_params), ceiling(stats::rexp(1, 1/2))))
+# 	new_params[focal] <- stats::rnorm(1, old_params[focal], ifelse(length(sd)==1,sd, sd[focal]))  
+#   }
+  	while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
+		sd <- sd*0.1
+  		new_params <- stats::rnorm(length(old_params), results[sample.int(nrow(results), 1, prob=sampleprobs),-1], sd)
+
 	}
   return(new_params)
 }
