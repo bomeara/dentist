@@ -210,13 +210,14 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
 #' @return A vector of the new parameter values
 dent_propose <- function(old_params, lower_bound=-Inf, upper_bound=Inf, sd=1) {
   sd <- abs(sd)
-  if(runif(1)<0.1) { #try changing all
-	new_params <- stats::rnorm(length(old_params), old_params, sd)
-  } else { #try sampling some but not all. Usually just one.
-	new_params <- old_params
-	focal <- sample.int(length(old_params),min(length(old_params), ceiling(stats::rexp(1, 1/2))))
-	new_params[focal] <- stats::rnorm(1, old_params[focal], ifelse(length(sd)==1,sd, sd[focal]))  
-  }
+  new_params <- stats::rnorm(length(old_params), old_params, sd)
+#   if(runif(1)<0.1) { #try changing all
+# 	new_params <- stats::rnorm(length(old_params), old_params, sd)
+#   } else { #try sampling some but not all. Usually just one.
+# 	new_params <- old_params
+# 	focal <- sample.int(length(old_params),min(length(old_params), ceiling(stats::rexp(1, 1/2))))
+# 	new_params[focal] <- stats::rnorm(1, old_params[focal], ifelse(length(sd)==1,sd, sd[focal]))  
+#   }
   	while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
 		sd <- sd*0.1
 		new_params <- dent_propose(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd)
@@ -259,31 +260,46 @@ dent_likelihood <- function(neglnL, best_neglnL, delta=2) {
 #' Plot the dented samples
 #' This will show the univariate plots of the parameter values versus the likelihood as well as bivariate plots of pairs of parameters to look for ridges.
 #' @param x An object of class dentist
+#' @param local.only Boolean indicating whether to trim x and y lims to be near accepted points
 #' @param ... Other arguments to pass to plot
 #' @export
-plot.dentist <- function(x, ...) {
-	nparams <- ncol(x$results)-1
-	nplots <- nparams + (nparams^2 - nparams)/2
-	results <- x$results
-	threshold <- x$best_neglnL + x$delta
-	results$color <- ifelse(results[,1]<=threshold, "black", "gray")
-	results_outside <- subset(results, results$color=="gray")
-	results_inside <- subset(results, results$color=="black")
-	graphics::par(mfrow=c(ceiling(nplots/nparams), nparams))
-	for (i in sequence(nparams)) {
-		plot(results[,i+1], results[,1], pch=20, col=results$color, main=colnames(results)[i+1], xlab=colnames(results)[i+1], ylab="Negative Log Likelihood", bty="n", ...)
-		graphics::abline(h=threshold, col="blue")
-		graphics::points(results[which.min(results[,1]), i+1], results[which.min(results[,1]),1], pch=21, col="red")
-	}
-	for (i in sequence(nparams)) {
-		for (j in sequence(nparams)) {
-			if(j>i) {
-				plot(results_outside[,i+1], results_outside[,j+1], pch=20, col=results_outside$color, xlab=colnames(results)[i+1], ylab=colnames(results)[j+1], bty="n", main=paste0(colnames(results)[j+1], " vs. ", colnames(results)[i+1]), ...)
-				graphics::points(results_inside[,i+1], results_inside[,j+1], pch=20, col=results_inside$color)
-				graphics::points(results[which.min(results[,1]), i+1], results[which.min(results[,1]),j+1], pch=21, col="red")
-			}
-		}	
-	}
+plot.dentist <- function(x, local.only=FALSE, ...) {
+  nparams <- ncol(x$results)-1
+  nplots <- nparams + (nparams^2 - nparams)/2
+  results <- x$results
+  threshold <- x$best_neglnL + x$delta
+  results$color <- ifelse(results[,1]<=threshold, "black", "gray")
+  results_outside <- subset(results, results$color=="gray")
+  results_inside <- subset(results, results$color=="black")
+  graphics::par(mfrow=c(ceiling(nplots/nparams), nparams))
+  for (i in sequence(nparams)) {
+    if(local.only){
+      xlim=range(results_inside[,i+1])
+      ylim=c(range(results_inside[,1]))
+    }else{
+      xlim=range(c(results_inside[,i+1]), results_outside[,i+1])
+      ylim=c(range(c(results_inside[,1], results_outside[,1])))
+    }
+    plot(results[,i+1], results[,1], pch=20, col=results$color, main=colnames(results)[i+1], xlab=colnames(results)[i+1], ylab="Negative Log Likelihood", bty="n", xlim=xlim, ylim=ylim, ...)
+    graphics::abline(h=threshold, col="blue")
+    graphics::points(results[which.min(results[,1]), i+1], results[which.min(results[,1]),1], pch=21, col="red")
+  }
+  for (i in sequence(nparams)) {
+    for (j in sequence(nparams)) {
+      if(j>i) {
+        if(local.only){
+          xlim=range(results_inside[,i+1])
+          ylim=range(results_inside[,j+1])
+        }else{
+          xlim=range(c(results_inside[,i+1]), results_outside[,i+1])
+          ylim=range(c(results_inside[,j+1]), results_outside[,j+1])
+        }
+        plot(results_outside[,i+1], results_outside[,j+1], pch=20, col=results_outside$color, xlab=colnames(results)[i+1], ylab=colnames(results)[j+1], bty="n", main=paste0(colnames(results)[j+1], " vs. ", colnames(results)[i+1]), xlim=xlim, ylim=ylim, ...)
+        graphics::points(results_inside[,i+1], results_inside[,j+1], pch=20, col=results_inside$color)
+        graphics::points(results[which.min(results[,1]), i+1], results[which.min(results[,1]),j+1], pch=21, col="red")
+      }
+    }	
+  }
 }
 
 #' Summarize dentist
