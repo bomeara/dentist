@@ -65,6 +65,14 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
   }
   sd_vector_positive <- sd_vector[which(sd_vector>0)]
   sd_vector[sd_vector==0] <- 0.5*min(sd_vector_positive)
+  if(length(sd_vector) != length(par)){ # some of the code below is parameter specific changes in proposal distributions
+    if(length(sd_vector) == 1){
+      sd_vector <- rep(sd_vector, length(par))
+    }else{
+      warning("The number of sd values doesn't match the number of parameters. Using only the first given value.", immediate.=TRUE)
+      sd_vector <- rep(sd_vector[1], length(par))
+    }
+  }
   acceptances <- rep(NA, nsteps)
   old_params <- par
   old_dented_neglnL <- dent_likelihood(best_neglnL, best_neglnL, delta)
@@ -224,7 +232,7 @@ dent_propose <- function(old_params, lower_bound=-Inf, upper_bound=Inf, sd=1) {
 # 	focal <- sample.int(length(old_params),min(length(old_params), ceiling(stats::rexp(1, 1/2))))
 # 	new_params[focal] <- stats::rnorm(1, old_params[focal], ifelse(length(sd)==1,sd, sd[focal]))  
 #   }
-  	while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
+  while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
 		sd <- sd*0.1
 		new_params <- dent_propose(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd)
 	}
@@ -254,7 +262,7 @@ sphere_propose <- function(results, delta, old_params, lower_bound=-Inf, upper_b
   distances <- abs(results[,1]-(min(results[,1])+delta))
   sampleprobs <- (max(distances)-distances) * extremes #so we bias towards points that are near min lnL + delta and for those that are at the extremes of the parameter space
   sampleprobs <- sampleprobs + 1 # to flatten it out; also helps with corner case of having only one sample
-  new_params <- stats::rnorm(length(old_params), results[sample.int(nrow(results), 1, prob=sampleprobs),-1], sd)
+  new_params <- stats::rnorm(length(old_params), unlist(results[sample.int(nrow(results), 1, prob=sampleprobs),-1]), sd)
   #new_params <- stats::rnorm(length(old_params), old_params, sd)
 #   if(runif(1)<0.1) { #try changing all
 # 	new_params <- stats::rnorm(length(old_params), old_params, sd)
@@ -265,8 +273,7 @@ sphere_propose <- function(results, delta, old_params, lower_bound=-Inf, upper_b
 #   }
   	while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
 		sd <- sd*0.1
-  		new_params <- stats::rnorm(length(old_params), results[sample.int(nrow(results), 1, prob=sampleprobs),-1], sd)
-
+  	new_params <- stats::rnorm(length(old_params), unlist(results[sample.int(nrow(results), 1, prob=sampleprobs),-1]), sd)
 	}
   return(new_params)
 }
