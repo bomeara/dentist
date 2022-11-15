@@ -256,11 +256,18 @@ sphere_propose <- function(results, delta, old_params, lower_bound=-Inf, upper_b
   get_cdf <- function(x) {
 	return(ecdf(x)(x))
   }
-  extremes <- rowSums(abs(-0.5+apply(results_params, 2, get_cdf)))
+  
+  if(dim(results_params)[1] < 5){
+    extremes <- 1
+  }else{
+    extremes <- rowSums(abs(-0.5+apply(results_params, 2, get_cdf)))
+    extremes_p <- extremes/sum(extremes)
+  }
   
   sd <- abs(sd)
   distances <- abs(results[,1]-(min(results[,1])+delta))
-  sampleprobs <- (max(distances)-distances) * extremes #so we bias towards points that are near min lnL + delta and for those that are at the extremes of the parameter space
+  distances_p <- max(distances)-distances
+  sampleprobs <- (distances_p+1) * extremes #so we bias towards points that are near min lnL + delta and for those that are at the extremes of the parameter space
   sampleprobs <- sampleprobs + 1 # to flatten it out; also helps with corner case of having only one sample
   new_params <- stats::rnorm(length(old_params), unlist(results[sample.int(nrow(results), 1, prob=sampleprobs),-1]), sd)
   #new_params <- stats::rnorm(length(old_params), old_params, sd)
