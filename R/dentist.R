@@ -242,9 +242,17 @@ dent_propose <- function(old_params, lower_bound=-Inf, upper_bound=Inf, sd=1) {
 #' @return A vector of the new parameter values
 sphere_propose <- function(results, delta, old_params, lower_bound=-Inf, upper_bound=Inf, sd=1) {
   results <- results[which(!is.na(results[,1])),]
+  results <- results[which(abs(results[,1]-min(results[,1]))<=2*delta),] #close-ish range
+  results_params <- results[,-1]
+  
+  get_cdf <- function(x) {
+	return(ecdf(x)(x))
+  }
+  extremes <- rowSums(abs(-0.5+apply(results_params, 2, get_cdf)))
+  
   sd <- abs(sd)
   distances <- abs(results[,1]-(min(results[,1])+delta))
-  sampleprobs <- max(distances)-distances #so we bias towards points that are near min lnL + delta
+  sampleprobs <- (max(distances)-distances) * extremes #so we bias towards points that are near min lnL + delta and for those that are at the extremes of the parameter space
   sampleprobs <- sampleprobs + 1 # to flatten it out; also helps with corner case of having only one sample
   new_params <- stats::rnorm(length(old_params), results[sample.int(nrow(results), 1, prob=sampleprobs),-1], sd)
   #new_params <- stats::rnorm(length(old_params), old_params, sd)
