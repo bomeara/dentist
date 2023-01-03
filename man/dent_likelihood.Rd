@@ -2,8 +2,7 @@
 % Please edit documentation in R/dentist.R
 \name{dent_likelihood}
 \alias{dent_likelihood}
-\title{Dents the likelihood surface
-This takes any values that are better (lower) than the desired negative log likelihood and reflects them across the best_neglnL + delta line, "denting" the likelihood surface.}
+\title{Dents the likelihood surface}
 \usage{
 dent_likelihood(neglnL, best_neglnL, delta = 2)
 }
@@ -18,7 +17,6 @@ dent_likelihood(neglnL, best_neglnL, delta = 2)
 The transformed negative log likelihood
 }
 \description{
-Dents the likelihood surface
 This takes any values that are better (lower) than the desired negative log likelihood and reflects them across the best_neglnL + delta line, "denting" the likelihood surface.
 }
 \examples{

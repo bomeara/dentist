@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,18 +40,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">dentist</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -59,7 +55,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/bomeara/dentist/">
+  <a href="https://github.com/bomeara/dentist/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -76,87 +72,87 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="dentist" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#dentist" class="anchor"></a>dentist</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="dentist">dentist<a class="anchor" aria-label="anchor" href="#dentist"></a>
+</h1></div>
 <!-- badges: start -->
 
 <p><code>dentist</code> is an R package to sample points around a specified distance from the maximum likelihood estimates. This should be a better way to estimate uncertainty than using the Hessian of the likelihood equation. It works by “denting” the likelihood surface to make a ridge at your desired delta lnL and then “walks” around this dented surface, sampling points.</p>
-<p><a href="https://bomeara.github.io/dentist/" class="uri">https://bomeara.github.io/dentist/</a> for a website</p>
-<p><a href="https://github.com/bomeara/dentist" class="uri">https://github.com/bomeara/dentist</a> for the source code</p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<p>And the development version from <a href="https://github.com/">GitHub</a> with:</p>
+<p><a href="https://bomeara.github.io/dentist/" class="external-link uri">https://bomeara.github.io/dentist/</a> for a website</p>
+<p><a href="https://github.com/bomeara/dentist" class="external-link uri">https://github.com/bomeara/dentist</a> for the source code</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>And the development version from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"bomeara/dentist"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"bomeara/dentist"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div id="example" class="section level2">
-<h2 class="hasAnchor">
-<a href="#example" class="anchor"></a>Example</h2>
+<div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
 <p>Imagine we had empirical data from some distribution:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sims</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html">rlnorm</a></span><span class="op">(</span><span class="fl">100</span>, meanlog<span class="op">=</span><span class="fl">1</span>, sdlog<span class="op">=</span><span class="fl">3</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sims</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm</a></span><span class="op">(</span><span class="fl">100</span>, meanlog<span class="op">=</span><span class="fl">1</span>, sdlog<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <p>We could write a function for the likelihood of the data and optimize this function:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Define the likelihood function</span>
-
- <span class="va">dlnorm_to_run</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span>, <span class="va">sims</span><span class="op">)</span> <span class="op">{</span>
-   <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html">dlnorm</a></span><span class="op">(</span><span class="va">sims</span>, meanlog<span class="op">=</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, sdlog<span class="op">=</span><span class="va">par</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, log<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
- <span class="op">}</span>
- 
- <span class="co"># Optimize the model given the empirical data. We guess at the starting values</span>
- <span class="va">optimized_results</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/optim.html">optim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>meanlog<span class="op">=</span><span class="fl">.5</span>, sdlog<span class="op">=</span><span class="fl">1</span><span class="op">)</span>, <span class="va">dlnorm_to_run</span>, sims<span class="op">=</span><span class="va">sims</span><span class="op">)</span>
- <span class="va">best_par</span> <span class="op">&lt;-</span> <span class="va">optimized_results</span><span class="op">$</span><span class="va">par</span>
- <span class="va">best_neglnL</span> <span class="op">&lt;-</span> <span class="va">optimized_results</span><span class="op">$</span><span class="va">value</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Define the likelihood function</span></span>
+<span></span>
+<span> <span class="va">dlnorm_to_run</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span>, <span class="va">sims</span><span class="op">)</span> <span class="op">{</span></span>
+<span>   <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">dlnorm</a></span><span class="op">(</span><span class="va">sims</span>, meanlog<span class="op">=</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, sdlog<span class="op">=</span><span class="va">par</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, log<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span> <span class="op">}</span></span>
+<span> </span>
+<span> <span class="co"># Optimize the model given the empirical data. We guess at the starting values</span></span>
+<span> <span class="va">optimized_results</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>meanlog<span class="op">=</span><span class="fl">.5</span>, sdlog<span class="op">=</span><span class="fl">1</span><span class="op">)</span>, <span class="va">dlnorm_to_run</span>, sims<span class="op">=</span><span class="va">sims</span><span class="op">)</span></span>
+<span> <span class="va">best_par</span> <span class="op">&lt;-</span> <span class="va">optimized_results</span><span class="op">$</span><span class="va">par</span></span>
+<span> <span class="va">best_neglnL</span> <span class="op">&lt;-</span> <span class="va">optimized_results</span><span class="op">$</span><span class="va">value</span></span></code></pre></div>
 <p>That gives us a point estimate of the best values:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">best_par</span><span class="op">)</span>
-<span class="co">#&gt;  meanlog    sdlog </span>
-<span class="co">#&gt; 0.893797 2.955575</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">best_par</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  meanlog    sdlog </span></span>
+<span><span class="co">#&gt; 0.893797 2.955575</span></span></code></pre></div>
 <p>But how confident should we be? For familiar distributions like a binomial distribution we can compute the confidence interval for a parameter estimate. For less familiar ones, we can approximate it using the curvature at the peak. Another approach is to vary one parameter at a time while holding others at their maximum likelihood estimate until the likelihood gets much worse (typically a cutoff of delta 2 log likelihood units is used). That can underestimate the uncertainty, since there could be a ridge in parameter space. A better approach would be to try many values and return all those within some specified likelihood bounds. This could be done with latin hypercubes, but it can be a large part of parameter space to explore. A different approach would be to focus on sampling points right at the boundary of “good enough.” This package does this. If a likelihood surface is a peak, this package wants to sample points around a specified height below the peak to fully sample the uncertainty. It does it by “walking” with a Metropolis-Hastings algorithm around a dented likelihood surface, so that values better than the ideal threshold are reflected back. First, to show how the original surface (left) is dented (right):</p>
 <p><img src="reference/figures/README-awesomeness-1.png" width="100%"></p>
 <p>Note that for plotting, it’s shown with the regular log likelihood: typically values &lt;&lt; 0, and higher is better. In the package, it wants you to use negative log likelihood, so it would be the mirror image of these plots (lower better).</p>
 <p>And now to sample around that ring on the right:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://bomeara.github.io/dentist/">dentist</a></span><span class="op">)</span>
- <span class="va">dented_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dent_walk.html">dent_walk</a></span><span class="op">(</span>par<span class="op">=</span><span class="va">best_par</span>, fn<span class="op">=</span><span class="va">dlnorm_to_run</span>, best_neglnL<span class="op">=</span><span class="va">best_neglnL</span>,  nsteps<span class="op">=</span><span class="fl">1000</span>, print_freq<span class="op">=</span><span class="fl">250</span>, sims<span class="op">=</span><span class="va">sims</span><span class="op">)</span>
-<span class="co">#&gt; [1] "Done replicate 250"</span>
-<span class="co">#&gt; [1] "CI of values"</span>
-<span class="co">#&gt;            X1        X2       X3</span>
-<span class="co">#&gt; [1,] 339.6352 0.6339612 2.626464</span>
-<span class="co">#&gt; [2,] 341.6350 1.4497321 3.418966</span>
-<span class="co">#&gt; [1] "Done replicate 500"</span>
-<span class="co">#&gt; [1] "CI of values"</span>
-<span class="co">#&gt;            X1        X2       X3</span>
-<span class="co">#&gt; [1,] 339.6352 0.3506638 2.608558</span>
-<span class="co">#&gt; [2,] 341.6350 1.4884961 3.418966</span>
-<span class="co">#&gt; [1] "Done replicate 750"</span>
-<span class="co">#&gt; [1] "CI of values"</span>
-<span class="co">#&gt;            X1        X2       X3</span>
-<span class="co">#&gt; [1,] 339.6352 0.3506638 2.608558</span>
-<span class="co">#&gt; [2,] 341.6350 1.4884961 3.418966</span>
-<span class="co">#&gt; [1] "Done replicate 1000"</span>
-<span class="co">#&gt; [1] "CI of values"</span>
-<span class="co">#&gt;            X1        X2       X3</span>
-<span class="co">#&gt; [1,] 339.6352 0.3326398 2.608558</span>
-<span class="co">#&gt; [2,] 341.6350 1.4884961 3.418966</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bomeara.github.io/dentist/" class="external-link">dentist</a></span><span class="op">)</span></span>
+<span> <span class="va">dented_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dent_walk.html">dent_walk</a></span><span class="op">(</span>par<span class="op">=</span><span class="va">best_par</span>, fn<span class="op">=</span><span class="va">dlnorm_to_run</span>, best_neglnL<span class="op">=</span><span class="va">best_neglnL</span>,  nsteps<span class="op">=</span><span class="fl">1000</span>, print_freq<span class="op">=</span><span class="fl">250</span>, sims<span class="op">=</span><span class="va">sims</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "Done replicate 250"</span></span>
+<span><span class="co">#&gt; [1] "CI of values"</span></span>
+<span><span class="co">#&gt;            X1        X2       X3</span></span>
+<span><span class="co">#&gt; [1,] 339.6352 0.6339612 2.626464</span></span>
+<span><span class="co">#&gt; [2,] 341.6350 1.4497321 3.418966</span></span>
+<span><span class="co">#&gt; [1] "Done replicate 500"</span></span>
+<span><span class="co">#&gt; [1] "CI of values"</span></span>
+<span><span class="co">#&gt;            X1        X2       X3</span></span>
+<span><span class="co">#&gt; [1,] 339.6352 0.3506638 2.608558</span></span>
+<span><span class="co">#&gt; [2,] 341.6350 1.4884961 3.418966</span></span>
+<span><span class="co">#&gt; [1] "Done replicate 750"</span></span>
+<span><span class="co">#&gt; [1] "CI of values"</span></span>
+<span><span class="co">#&gt;            X1        X2       X3</span></span>
+<span><span class="co">#&gt; [1,] 339.6352 0.3506638 2.608558</span></span>
+<span><span class="co">#&gt; [2,] 341.6350 1.4884961 3.418966</span></span>
+<span><span class="co">#&gt; [1] "Done replicate 1000"</span></span>
+<span><span class="co">#&gt; [1] "CI of values"</span></span>
+<span><span class="co">#&gt;            X1        X2       X3</span></span>
+<span><span class="co">#&gt; [1,] 339.6352 0.3326398 2.608558</span></span>
+<span><span class="co">#&gt; [2,] 341.6350 1.4884961 3.418966</span></span></code></pre></div>
 <p>This generates information about the confidence:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">dented_results</span><span class="op">)</span>
-<span class="co">#&gt; This ran 1000 steps looking for all points within 2 negative log likelihood units of the best parameter values.</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Parameters: </span>
-<span class="co">#&gt;                     meanlog    sdlog</span>
-<span class="co">#&gt; best             0.89379698 2.955575</span>
-<span class="co">#&gt; lower.CI         0.33263978 2.608558</span>
-<span class="co">#&gt; upper.CI         1.48849614 3.418966</span>
-<span class="co">#&gt; lowest.examined  0.04736823 2.491895</span>
-<span class="co">#&gt; highest.examined 1.60055403 3.560104</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dented_results</span><span class="op">)</span></span>
+<span><span class="co">#&gt; This ran 1000 steps looking for all points within 2 negative log likelihood units of the best parameter values.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Parameters: </span></span>
+<span><span class="co">#&gt;                     meanlog    sdlog</span></span>
+<span><span class="co">#&gt; best             0.89379698 2.955575</span></span>
+<span><span class="co">#&gt; lower.CI         0.33263978 2.608558</span></span>
+<span><span class="co">#&gt; upper.CI         1.48849614 3.418966</span></span>
+<span><span class="co">#&gt; lowest.examined  0.04736823 2.491895</span></span>
+<span><span class="co">#&gt; highest.examined 1.60055403 3.560104</span></span></code></pre></div>
 <p>And also has a way to visualize the results:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">dented_results</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dented_results</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-summarized_results-1.png" width="100%"></p>
 <p>You do not need to use this package for simple distributions, but in phylogenetics, where programs like OUwie, corHMM, hisse, OUCH, and more give a point estimate, this lets you get confidence for the parameters if there’s a way to have a function where you pass in a set of parameter values and get back a negative log likelihood.</p>
 </div>
@@ -165,44 +161,55 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/bomeara/dentist/">https://​github.com/​bomeara/​dentist/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/bomeara/dentist/issues">https://​github.com/​bomeara/​dentist/​issues</a>
-</li>
+<li><a href="https://github.com/bomeara/dentist/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/bomeara/dentist/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
 <li><small>GPL (&gt;= 3)</small></li>
 </ul>
 </div>
-<div class="developers">
-<h2>Developers</h2>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li>Brian O'Meara <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-0337-5997" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="authors.html#citation">Citing dentist</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/bomeara/dentist/actions"><img src="https://github.com/bomeara/dentist/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li>Brian O'Meara <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-0337-5997" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/bomeara/dentist/actions" class="external-link"><img src="https://github.com/bomeara/dentist/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+</ul>
 </div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Brian O'Meara.</p>
+  <p></p>
+<p>Developed by Brian O’Meara.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
@@ -210,6 +217,8 @@
 
   
 
+
+  
 
   </body>
 </html>

@@ -1,4 +1,5 @@
 #' Sample points from along a ridge
+#' 
 #' This "dents" the likelihood surface by reflecting points better than a threshold back across the threshold (think of taking a hollow plastic model of a mountain and punching the top so it's a volcano). It then uses essentially a Metropolis-Hastings walk to wander around the new rim. It adjusts the proposal width so that it samples points around the desired likelihood. 
 #' This is better than using the curvature at the maximum likelihood estimate since it can actually sample points in case the assumptions of the curvature method do not hold. It is better than varying one parameter at a time while holding others constant because that could miss ridges: if I am fitting 5=x+y, and get a point estimate of (3,2), the reality is that there are an infinite range of values of x and y that will sum to 5, but if I hold x constant it looks like y is estimated very precisely. Of course, one could just fully embrace the Metropolis-Hastings lifestyle and use a full Bayesian approach.
 #' 
@@ -286,6 +287,7 @@ sphere_propose <- function(results, delta, old_params, lower_bound=-Inf, upper_b
 }
 
 #' Dents the likelihood surface
+#' 
 #' This takes any values that are better (lower) than the desired negative log likelihood and reflects them across the best_neglnL + delta line, "denting" the likelihood surface.
 #' @param neglnL The original negative log likelihood
 #' @param best_neglnL The negative log likelihood at the optimum; other values will be greater than this.
