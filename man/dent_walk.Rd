@@ -8,7 +8,8 @@ dent_walk(
   par,
   fn,
   best_neglnL,
-  delta = 2,
+  confidence_level = 0.95,
+  delta = NULL,
   nsteps = 1000,
   print_freq = 50,
   lower_bound = 0,
@@ -30,7 +31,9 @@ dent_walk(
 
 \item{best_neglnL}{The negative log likelihood at the optimum; other values will be greater than this.}
 
-\item{delta}{How far from the optimal negative log likelihood to focus samples}
+\item{confidence_level}{The confidence level represents the long-run proportion of CIs (at the given confidence level) that theoretically contain the true value of the parameter. For example, out of all intervals computed at the 95\% level, 95\% of them should contain the parameter's true value}
+
+\item{delta}{How far from the optimal negative log likelihood to focus sample. This is an optional value which overwrites the specified confidence_level}
 
 \item{nsteps}{How many steps to take in the analysis}
 
@@ -55,7 +58,7 @@ dent_walk(
 \item{...}{Other arguments to fn.}
 }
 \value{
-A dentist object containing results, the data.frame of negative log likelihoods and the parameters associated with them; acceptances, the vector of whether a proposed move was accepted each step; best_neglnL, the best value passed into the analysis; delta, the desired offset; all_ranges, a summary of the results.
+A dentist object containing results, the data.frame of negative log likelihoods and the parameters associated with them; acceptances, the vector of whether a proposed move was accepted each step; best_neglnL, the best value passed into the analysis; delta, the desired offset; all_ranges, a summary of the results; confidence_level, the confidence level assessed if assumptions of large sample size and non-boundary parameter estimates are met.
 }
 \description{
 This "dents" the likelihood surface by reflecting points better than a threshold back across the threshold (think of taking a hollow plastic model of a mountain and punching the top so it's a volcano). It then uses essentially a Metropolis-Hastings walk to wander around the new rim. It adjusts the proposal width so that it samples points around the desired likelihood.

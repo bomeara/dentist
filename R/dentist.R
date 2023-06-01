@@ -11,6 +11,7 @@
 #' @param par Starting parameter vector, generally at the optimum. If named, the vector names are used to label output parameters.
 #' @param fn The likelihood function, assumed to return negative log likelihoods
 #' @param best_neglnL The negative log likelihood at the optimum; other values will be greater than this.
+#' @param confidence_level The confidence level represents the long-run proportion of CIs (at the given confidence level) that theoretically contain the true value of the parameter. For example, out of all intervals computed at the 95% level, 95% of them should contain the parameter's true value
 #' @param delta How far from the optimal negative log likelihood to focus samples
 #' @param nsteps How many steps to take in the analysis
 #' @param print_freq Output progress every print_freq steps.
@@ -58,12 +59,13 @@
 #' 
 #' dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL, sims=sims)
 #' plot(dented_results)
-dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, adjust_width_interval=100, badval=1e9, sd_vector=NULL, debug=FALSE, restart_after=50, quiet=TRUE, sphere_probability=0, ...) {
+dent_walk <- function(par, fn, best_neglnL, confidence_level = 0.95, delta=NULL, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, adjust_width_interval=100, badval=1e9, sd_vector=NULL, debug=FALSE, restart_after=50, quiet=TRUE, sphere_probability=0, ...) {
   results <- data.frame(matrix(NA, nrow=nsteps+1, ncol=length(par)+1))
   results[1,] <- c(best_neglnL, par)
   if(is.null(sd_vector[1])) {
   	sd_vector <- 0.1*abs(par)
   }
+  deg_f <- length(par)
   sd_vector_positive <- sd_vector[which(sd_vector>0)]
   sd_vector[sd_vector==0] <- 0.5*min(sd_vector_positive)
   if(length(sd_vector) != length(par)){ # some of the code below is parameter specific changes in proposal distributions
@@ -74,6 +76,15 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
       sd_vector <- rep(sd_vector[1], length(par))
     }
   }
+  if(is.null(delta)){
+    if(0 > confidence_level & confidence_level >= 1){
+      stop("Confidence level must be between 0 and 1.")
+    }
+    delta <- qchisq(confidence_level, deg_f)/2
+  }else{
+    confidence_level<- pchisq(delta*2, deg_f)
+  }
+  print(paste0("Calculating intervals at a confidence level of ", round(confidence_level * 100, 2), "%"))
   acceptances <- rep(NA, nsteps)
   old_params <- par
   old_dented_neglnL <- dent_likelihood(best_neglnL, best_neglnL, delta)
@@ -211,7 +222,7 @@ dent_walk <- function(par, fn, best_neglnL, delta=2, nsteps=1000, print_freq=50,
 	 warning(paste0("The best negative log likelihood found during sampling was ",  best_neglnL-min(results[,1]), " negative log likelihood units BETTER than the starting best value. This can indicate your original optimization search failed to find the global optimum, especially if this number is large (>0.1)"))
   }
 
-  final_results <- list(results=results, acceptances=acceptances, best_neglnL=best_neglnL, delta=delta, all_ranges=all_ranges)
+  final_results <- list(results=results, acceptances=acceptances, best_neglnL=best_neglnL, delta=delta, all_ranges=all_ranges, confidence_level=confidence_level)
   class(final_results) <- c("dentist", "list")
   return(final_results)
 }
