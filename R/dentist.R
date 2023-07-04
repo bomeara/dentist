@@ -60,6 +60,9 @@
 #' dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL, sims=sims)
 #' plot(dented_results)
 dent_walk <- function(par, fn, best_neglnL, confidence_level = 0.95, delta=NULL, nsteps=1000, print_freq=50, lower_bound=0, upper_bound=Inf, adjust_width_interval=100, badval=1e9, sd_vector=NULL, debug=FALSE, restart_after=50, quiet=TRUE, sphere_probability=0, ...) {
+  if(is.null(names(par)[1])) {
+	names(par) <- paste0("parameter_", 1:length(par))
+  }
   results <- data.frame(matrix(NA, nrow=nsteps+1, ncol=length(par)+1))
   results[1,] <- c(best_neglnL, par)
   if(is.null(sd_vector[1])) {
