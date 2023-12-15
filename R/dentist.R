@@ -239,6 +239,7 @@ dent_walk <- function(par, fn, best_neglnL, confidence_level = 0.95, delta=NULL,
 #' @return A vector of the new parameter values
 dent_propose <- function(old_params, lower_bound=-Inf, upper_bound=Inf, sd=1) {
   sd <- abs(sd)
+  constrained_params <- which(lower_bound==upper_bound)
   new_params <- stats::rnorm(length(old_params), old_params, sd)
 #   if(runif(1)<0.1) { #try changing all
 # 	new_params <- stats::rnorm(length(old_params), old_params, sd)
@@ -247,6 +248,9 @@ dent_propose <- function(old_params, lower_bound=-Inf, upper_bound=Inf, sd=1) {
 # 	focal <- sample.int(length(old_params),min(length(old_params), ceiling(stats::rexp(1, 1/2))))
 # 	new_params[focal] <- stats::rnorm(1, old_params[focal], ifelse(length(sd)==1,sd, sd[focal]))  
 #   }
+  if(length(constrained_params)>0) {
+	new_params[constrained_params] <- lower_bound[constrained_params]
+  }
   while(any(new_params<lower_bound) | any(new_params>upper_bound)) {
 		sd <- sd*0.1
 		new_params <- dent_propose(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd)
