@@ -59,7 +59,8 @@ This is better than using the curvature at the maximum likelihood estimate since
 <span>  <span class="va">par</span>,</span>
 <span>  <span class="va">fn</span>,</span>
 <span>  <span class="va">best_neglnL</span>,</span>
-<span>  delta <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  confidence_level <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  delta <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  nsteps <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  print_freq <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  lower_bound <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -87,6 +88,10 @@ This is better than using the curvature at the maximum likelihood estimate since
 
 <dt>best_neglnL</dt>
 <dd><p>The negative log likelihood at the optimum; other values will be greater than this.</p></dd>
+
+
+<dt>confidence_level</dt>
+<dd><p>The confidence level represents the long-run proportion of CIs (at the given confidence level) that theoretically contain the true value of the parameter. For example, out of all intervals computed at the 95% level, 95% of them should contain the parameter's true value</p></dd>
 
 
 <dt>delta</dt>
@@ -169,130 +174,133 @@ This is better than using the curvature at the maximum likelihood estimate since
 <span class="r-in"><span><span class="va">best_neglnL</span> <span class="op">&lt;-</span> <span class="va">optimized_results</span><span class="op">$</span><span class="va">objective</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">dented_results</span> <span class="op">&lt;-</span> <span class="fu">dent_walk</span><span class="op">(</span>par<span class="op">=</span><span class="va">best_par</span>, fn<span class="op">=</span><span class="va">dnorm_to_run</span>, best_neglnL<span class="op">=</span><span class="va">best_neglnL</span>, sims<span class="op">=</span><span class="va">sims</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Calculating intervals at a confidence level of 95%"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 50"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 9 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 6 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75989</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.7319 17.07388</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.313987124023026"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.56722</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.5148 16.76516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.197944062450329"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "decreasing proposal width for all parameters"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 100"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 16 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 11 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.7517 17.07388</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.315051389064056"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.56722</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.5148 16.87244</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.305219838222175"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 150"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 23 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 19 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.7517 17.10436</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.345529718594076"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55959</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.6518 16.87244</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.312846432187872"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "decreasing proposal width for all parameters"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 200"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 30 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 21 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.7517 17.10436</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.345529718594076"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55959</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.6518 16.87244</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.312846432187872"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 250"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 35 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 28 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.7517 17.10436</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.345529718594076"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55959</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.375784802900778"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "decreasing proposal width for all parameters"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 300"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 40 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 31 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.7517 17.12337</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.364540728767491"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55959</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.375784802900778"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 350"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 49 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 40 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.8477 17.13746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.378630216287267"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383645174152818"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "decreasing proposal width for all parameters"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 400"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 54 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 47 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.8477 17.13746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.378630216287267"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383645174152818"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 450"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 63 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 56 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.8477 17.13746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.378630216287267"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383645174152818"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "decreasing proposal width for all parameters"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 500"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 71 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 64 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.8477 17.13746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.378630216287267"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383645174152818"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 550"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 79 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 78 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.8477 17.13746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.378630216287267"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383645174152818"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 600"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 93 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 92 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.8477 17.13746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.378630216287267"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383645174152818"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 650"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 107 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 113 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.8477 17.13746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.378630216287267"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383645174152818"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 700"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 116 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 127 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.8477 17.13746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.378630216287267"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383645174152818"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 750"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 131 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 141 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.9429 17.14236</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383530281098409"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383645174152818"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 800"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 142 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 152 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75060</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.9429 17.14236</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.391754686987934"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383645174152818"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 850"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 156 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 165 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.75060</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.9834 17.14441</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.393804870328282"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383645174152818"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 900"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 166 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 174 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.74813</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.9834 17.14441</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.3962766766684"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383645174152818"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 950"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 172 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 187 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.74813</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.9834 17.14441</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.3962766766684"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383645174152818"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "decreasing proposal width for all parameters"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 1000"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 184 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 197 replicates within 1.92072941034706 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL     mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 146.0074 16.74813</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 147.9834 17.14441</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.3962766766684"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 132.9692 16.55173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 134.8189 16.93538</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.383645174152818"</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dented_results</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="dent_walk-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -308,129 +316,128 @@ This is better than using the curvature at the maximum likelihood estimate since
 <span class="r-in"><span><span class="va">best_neglnL</span> <span class="op">&lt;-</span> <span class="va">optimized_results</span><span class="op">$</span><span class="va">value</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">dented_results</span> <span class="op">&lt;-</span> <span class="fu">dent_walk</span><span class="op">(</span>par<span class="op">=</span><span class="va">best_par</span>, fn<span class="op">=</span><span class="va">dlnorm_to_run</span>, best_neglnL<span class="op">=</span><span class="va">best_neglnL</span>, sims<span class="op">=</span><span class="va">sims</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Calculating intervals at a confidence level of 95%"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 50"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 19 replicates within 2 neglnL of the optimum)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.9742969 2.654555</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.7383 1.5574763 3.254067</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.349623094640173"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 26 replicates within 2.99573227355399 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL  meanlog    sdlog</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 1.358906 2.582385</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.0017 2.004330 3.248386</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.429852847978418"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "increasing proposal width for all parameters"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 100"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 47 replicates within 2 neglnL of the optimum)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.6474824 2.654555</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8720 1.5574763 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.693000265446689"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 49 replicates within 2.99573227355399 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL  meanlog    sdlog</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 1.358906 2.582385</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.1995 2.028858 3.303583</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.483168119583196"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 150"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 77 replicates within 2 neglnL of the optimum)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.6474824 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8720 1.6541926 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.831171762773581"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "increasing proposal width for all parameters"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "increasing proposal width for some parameters"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 66 replicates within 2.99573227355399 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL  meanlog    sdlog</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 1.358906 2.551179</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.1995 2.028858 3.361751</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.543044550465268"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 200"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 92 replicates within 2 neglnL of the optimum)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.6474824 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.852542668367412"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 90 replicates within 2.99573227355399 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL  meanlog    sdlog</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 1.086396 2.483972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.1995 2.028858 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.868521061393738"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 250"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 118 replicates within 2 neglnL of the optimum)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.6474824 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.852542668367412"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "increasing proposal width for all parameters"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 109 replicates within 2.99573227355399 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL  meanlog    sdlog</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 1.086396 2.483972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.1995 2.060216 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.897418727784183"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 300"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 136 replicates within 2 neglnL of the optimum)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.6474824 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.852542668367412"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 125 replicates within 2.99573227355399 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL  meanlog    sdlog</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.669806 2.483972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.1995 2.060216 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.2813242968153"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 350"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 150 replicates within 2 neglnL of the optimum)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.6474824 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.852542668367412"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 152 replicates within 2.99573227355399 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL  meanlog    sdlog</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.669806 2.483972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.2060 2.060216 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.2813242968153"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 400"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 160 replicates within 2 neglnL of the optimum)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.6474824 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.852542668367412"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 170 replicates within 2.99573227355399 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL  meanlog    sdlog</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.669806 2.483972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.2060 2.060216 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.2813242968153"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 450"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 179 replicates within 2 neglnL of the optimum)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.6474824 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.852542668367412"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 185 replicates within 2.99573227355399 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL  meanlog    sdlog</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.669806 2.483972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.2060 2.060216 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.2813242968153"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 500"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 191 replicates within 2 neglnL of the optimum)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.5891466 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.90070654607528"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 206 replicates within 2.99573227355399 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL  meanlog    sdlog</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.669806 2.483972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.2060 2.060216 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.2813242968153"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 550"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 199 replicates within 2 neglnL of the optimum)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.5891466 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.90070654607528"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 229 replicates within 2.99573227355399 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL  meanlog    sdlog</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.669806 2.483972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.2060 2.060216 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.2813242968153"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 600"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 203 replicates within 2 neglnL of the optimum)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.5891466 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.90070654607528"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 258 replicates within 2.99573227355399 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL  meanlog    sdlog</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.669806 2.483972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.2060 2.060216 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.2813242968153"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 650"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 214 replicates within 2 neglnL of the optimum)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.5891466 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.90070654607528"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 278 replicates within 2.99573227355399 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL  meanlog    sdlog</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.669806 2.483972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.2060 2.060216 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.2813242968153"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 700"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 225 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 288 replicates within 2.99573227355399 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.5891466 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.90070654607528"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.6574205 2.483972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.2060 2.0602163 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.29273808977514"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 750"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 232 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 307 replicates within 2.99573227355399 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.5891466 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.90070654607528"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.6574205 2.483972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.2060 2.0602163 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.29273808977514"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 800"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 244 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 325 replicates within 2.99573227355399 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.5891466 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.90070654607528"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.6574205 2.461502</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.2060 2.0602163 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.32425903599205"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 850"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 256 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 338 replicates within 2.99573227355399 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.5891466 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.90070654607528"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.6574205 2.461502</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.2060 2.0602163 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.32425903599205"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 900"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 273 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 357 replicates within 2.99573227355399 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.5891466 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.90070654607528"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.6574205 2.461502</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.2060 2.0602163 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.32425903599205"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 950"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 287 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 379 replicates within 2.99573227355399 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.5891466 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.90070654607528"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.6574205 2.461502</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.2060 2.0602163 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.32425903599205"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Done replicate 1000"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 294 replicates within 2 neglnL of the optimum)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CI of values (the 399 replicates within 2.99573227355399 neglnL of the optimum)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        neglnL   meanlog    sdlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 360.8793 0.5891466 2.590467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 362.8766 1.6800769 3.416099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 0.90070654607528"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 382.2329 0.6574205 2.461502</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 385.2060 2.0602163 3.405516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Rough volume of good region is 1.32425903599205"</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dented_results</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="dent_walk-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>
