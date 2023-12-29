@@ -166,7 +166,7 @@ dent_walk <- function(par, fn, best_neglnL, confidence_level = 0.95, delta=NULL,
       acceptances_run <- utils::tail(acceptances[!is.na(acceptances)],adjust_width_interval)
       if(sum(acceptances_run)/length(acceptances_run) > 0.3) {
         sd_vector <- sd_vector * 1.5
-		print("increasing proposal width for all parameters")
+		#print("increasing proposal width for all parameters")
 		if(debug) {
 			print("changed proposals")
 			print(data.frame(old=sd_original, new=sd_vector))	
@@ -175,7 +175,7 @@ dent_walk <- function(par, fn, best_neglnL, confidence_level = 0.95, delta=NULL,
       if(sum(acceptances_run)/length(acceptances_run) < 0.1) {
 
         sd_vector <- sd_vector * 0.8
-		print("decreasing proposal width for all parameters")
+		#print("decreasing proposal width for all parameters")
 		if(debug) {
 			print("changed proposals")
 			print(data.frame(old=sd_original, new=sd_vector))	
@@ -193,7 +193,7 @@ dent_walk <- function(par, fn, best_neglnL, confidence_level = 0.95, delta=NULL,
 		not_past_bounds <- any(all_results_range==good_enough_results_range) # single parameter
 	  }
       if(any(not_past_bounds)) {
-		print("increasing proposal width for some parameters")
+		#print("increasing proposal width for some parameters")
         sd_vector[not_past_bounds] <- sd_vector[not_past_bounds]*1.5
 		if(debug) {
 			print("changed proposals")
