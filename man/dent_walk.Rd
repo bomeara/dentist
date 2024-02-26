@@ -55,6 +55,8 @@ dent_walk(
 
 \item{quiet}{If TRUE, will quiet the likelihood function outputs}
 
+\item{sphere_probability}{The probability of using a sphere proposal near the bounds instead of the regular proposal}
+
 \item{...}{Other arguments to fn.}
 }
 \value{

@@ -23,6 +23,7 @@
 #' @param restart_after Sometimes the search can get stuck outside the good region but still accept moves. After this many steps without being inside the good region, restart from one of the past good points
 #' @param debug If TRUE, prints out much more information during a run
 #' @param quiet If TRUE, will quiet the likelihood function outputs
+#' @param sphere_probability The probability of using a sphere proposal near the bounds instead of the regular proposal
 #' @param ... Other arguments to fn. 
 #' @return A dentist object containing results, the data.frame of negative log likelihoods and the parameters associated with them; acceptances, the vector of whether a proposed move was accepted each step; best_neglnL, the best value passed into the analysis; delta, the desired offset; all_ranges, a summary of the results.
 #' @export
@@ -83,9 +84,9 @@ dent_walk <- function(par, fn, best_neglnL, confidence_level = 0.95, delta=NULL,
     if(0 > confidence_level & confidence_level >= 1){
       stop("Confidence level must be between 0 and 1.")
     }
-    delta <- qchisq(confidence_level, deg_f)/2
+    delta <- stats::qchisq(confidence_level, deg_f)/2
   }else{
-    confidence_level<- pchisq(delta*2, deg_f)
+    confidence_level<- stats::pchisq(delta*2, deg_f)
   }
   print(paste0("Calculating intervals at a confidence level of ", round(confidence_level * 100, 2), "%"))
   acceptances <- rep(NA, nsteps)
@@ -110,7 +111,7 @@ dent_walk <- function(par, fn, best_neglnL, confidence_level = 0.95, delta=NULL,
 	}
 	
 	new_params <- NULL
-	if(runif(1)>sphere_probability) {
+	if(stats::runif(1)>sphere_probability) {
     	new_params <- dent_propose(old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd_vector)
 	} else {
 		new_params <- sphere_propose(results, delta, old_params, lower_bound=lower_bound, upper_bound=upper_bound, sd=sd_vector)	
@@ -273,7 +274,7 @@ sphere_propose <- function(results, delta, old_params, lower_bound=-Inf, upper_b
   results_params <- results[,-1]
   
   get_cdf <- function(x) {
-	return(ecdf(x)(x))
+	return(stats::ecdf(x)(x))
   }
   
   if(dim(results_params)[1] < 5){
