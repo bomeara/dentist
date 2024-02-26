@@ -6,6 +6,7 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/bomeara/dentist/workflows/R-CMD-check/badge.svg)](https://github.com/bomeara/dentist/actions)
+[![R-CMD-check](https://github.com/bomeara/dentist/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bomeara/dentist/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `dentist` is an R package to sample points around a specified distance
@@ -56,8 +57,8 @@ That gives us a point estimate of the best values:
 
 ``` r
 print(best_par)
-#>  meanlog    sdlog 
-#> 0.893797 2.955575
+#>   meanlog     sdlog 
+#> 0.9035365 2.9155160
 ```
 
 But how confident should we be? For familiar distributions like a
@@ -79,53 +80,58 @@ Metropolis-Hastings algorithm around a dented likelihood surface, so
 that values better than the ideal threshold are reflected back. First,
 to show how the original surface (left) is dented (right):
 
-<img src="man/figures/README-awesomeness-1.png" width="100%" />
+<img src="man/figures/README-awesomeness-1.png" width="100%" /><img src="man/figures/README-awesomeness-2.png" width="100%" />
 
 Note that for plotting, it’s shown with the regular log likelihood:
-typically values &lt;&lt; 0, and higher is better. In the package, it
-wants you to use negative log likelihood, so it would be the mirror
-image of these plots (lower better).
+typically values \<\< 0, and higher is better. In the package, it wants
+you to use negative log likelihood, so it would be the mirror image of
+these plots (lower better).
 
 And now to sample around that ring on the right:
 
 ``` r
 library(dentist)
  dented_results <- dent_walk(par=best_par, fn=dlnorm_to_run, best_neglnL=best_neglnL,  nsteps=1000, print_freq=250, sims=sims)
+#> [1] "Calculating intervals at a confidence level of 95%"
 #> [1] "Done replicate 250"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 339.6352 0.6339612 2.626464
-#> [2,] 341.6350 1.4497321 3.418966
+#> [1] "CI of values (the 105 replicates within 2.99573227355399 neglnL of the optimum)"
+#>        neglnL   meanlog    sdlog
+#> [1,] 339.3150 0.3174435 2.511672
+#> [2,] 342.2822 1.5966083 3.461012
+#> [1] "Rough volume of good region is 1.21436251821118"
 #> [1] "Done replicate 500"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 339.6352 0.3506638 2.608558
-#> [2,] 341.6350 1.4884961 3.418966
+#> [1] "CI of values (the 180 replicates within 2.99573227355399 neglnL of the optimum)"
+#>        neglnL   meanlog    sdlog
+#> [1,] 339.3150 0.2776119 2.499837
+#> [2,] 342.2822 1.6138289 3.495837
+#> [1] "Rough volume of good region is 1.33087214415585"
 #> [1] "Done replicate 750"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 339.6352 0.3506638 2.608558
-#> [2,] 341.6350 1.4884961 3.418966
+#> [1] "CI of values (the 255 replicates within 2.99573227355399 neglnL of the optimum)"
+#>        neglnL  meanlog    sdlog
+#> [1,] 339.3150 0.192684 2.499837
+#> [2,] 342.2822 1.613829 3.495837
+#> [1] "Rough volume of good region is 1.41546033655253"
 #> [1] "Done replicate 1000"
-#> [1] "CI of values"
-#>            X1        X2       X3
-#> [1,] 339.6352 0.3326398 2.608558
-#> [2,] 341.6350 1.4884961 3.418966
+#> [1] "CI of values (the 318 replicates within 2.99573227355399 neglnL of the optimum)"
+#>        neglnL  meanlog    sdlog
+#> [1,] 339.3150 0.192684 2.482288
+#> [2,] 342.2822 1.613829 3.495837
+#> [1] "Rough volume of good region is 1.44040005320574"
 ```
 
 This generates information about the confidence:
 
 ``` r
 print(dented_results)
-#> This ran 1000 steps looking for all points within 2 negative log likelihood units of the best parameter values.
+#> This ran 1000 steps looking for all points within 2.99573227355399 negative log likelihood units of the best parameter values.
 #> 
 #> Parameters: 
-#>                     meanlog    sdlog
-#> best             0.89379698 2.955575
-#> lower.CI         0.33263978 2.608558
-#> upper.CI         1.48849614 3.418966
-#> lowest.examined  0.04736823 2.491895
-#> highest.examined 1.60055403 3.560104
+#>                      meanlog     sdlog
+#> best             0.903536538 2.9155160
+#> lower.CI         0.192684020 2.4822875
+#> upper.CI         1.613828879 3.4958366
+#> lowest.examined  0.006333159 0.3362002
+#> highest.examined 2.603547188 5.1997580
 ```
 
 And also has a way to visualize the results:

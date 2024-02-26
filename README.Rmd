@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/bomeara/dentist/workflows/R-CMD-check/badge.svg)](https://github.com/bomeara/dentist/actions)
+[![R-CMD-check](https://github.com/bomeara/dentist/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bomeara/dentist/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `dentist` is an R package to sample points around a specified distance from the maximum likelihood estimates. This should be a better way to estimate uncertainty than using the Hessian of the likelihood equation. It works by "denting" the likelihood surface to make a ridge at your desired delta lnL and then "walks" around this dented surface, sampling points.
