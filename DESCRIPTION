@@ -3,11 +3,16 @@ Title: Dents the Likelihood Surface to Estimate Parameter
     Uncertainty
 Version: 0.0.2
 Authors@R: 
-    person(given = "Brian",
+    c(person(given = "Brian",
            family = "O'Meara",
            role = c("aut", "cre"),
            email = "omeara.brian@gmail.com",
-           comment = c(ORCID = "0000-0002-0337-5997"))
+           comment = c(ORCID = "0000-0002-0337-5997")),
+	  person(given = "James",
+		   family = "Boyko",
+		   role = c("aut"), 
+		   comment = c(ORCID = "0000-0003-0952-169X"))
+	)
 Description: This will sample points around a specified distance
     from the maximum likelihood estimates. This should be a better way to
     estimate uncertainty than using the Hessian of the likelihood
