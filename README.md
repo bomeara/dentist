@@ -5,7 +5,6 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/bomeara/dentist/workflows/R-CMD-check/badge.svg)](https://github.com/bomeara/dentist/actions)
 [![R-CMD-check](https://github.com/bomeara/dentist/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bomeara/dentist/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
