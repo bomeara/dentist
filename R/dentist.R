@@ -381,6 +381,7 @@ plot.dentist <- function(x, local.only=FALSE, ...) {
       }
     }	
   }
+  graphics::par(mfrow=c(1,1))
 }
 
 #' Summarize dentist
