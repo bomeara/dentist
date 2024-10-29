@@ -5,12 +5,14 @@
 \title{Plot the dented samples
 This will show the univariate plots of the parameter values versus the likelihood as well as bivariate plots of pairs of parameters to look for ridges.}
 \usage{
-\method{plot}{dentist}(x, local.only = FALSE, ...)
+\method{plot}{dentist}(x, local.only = FALSE, binary_color = TRUE, ...)
 }
 \arguments{
 \item{x}{An object of class dentist}
 
 \item{local.only}{Boolean indicating whether to trim x and y lims to be near accepted points}
+
+\item{binary_color}{Boolean indicating whether to color points by inside or outside a threshold or by likelihood (only do latter with two free parameters)}
 
 \item{...}{Other arguments to pass to plot}
 }

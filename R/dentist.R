@@ -342,9 +342,10 @@ dent_likelihood <- function(neglnL, best_neglnL, delta=2) {
 #' This will show the univariate plots of the parameter values versus the likelihood as well as bivariate plots of pairs of parameters to look for ridges.
 #' @param x An object of class dentist
 #' @param local.only Boolean indicating whether to trim x and y lims to be near accepted points
+#' @param binary_color Boolean indicating whether to color points by inside or outside a threshold or by likelihood (only do latter with two free parameters)
 #' @param ... Other arguments to pass to plot
 #' @export
-plot.dentist <- function(x, local.only=FALSE, ...) {
+plot.dentist <- function(x, local.only=FALSE, binary_color=TRUE, ...) {
   nparams <- ncol(x$results)-1
   nplots <- nparams + (nparams^2 - nparams)/2
   results <- x$results
@@ -352,6 +353,18 @@ plot.dentist <- function(x, local.only=FALSE, ...) {
   results$color <- ifelse(results[,1]<=threshold, "black", "gray")
   results_outside <- subset(results, results$color=="gray")
   results_inside <- subset(results, results$color=="black")
+  if(!binary_color) {
+	likelihood <- results[,1]
+	likelihood_quantile <- ceiling(100*ecdf(likelihood)(likelihood))
+	
+	color_good <- colorRampPalette(c("orangered3", "yellow"))(100)
+	color_bad <- colorRampPalette(c("darkred", "dodgerblue1"))(100)
+	results$color_orig <- ifelse(results[,1]<=threshold, "black", "gray")
+	results$color[results$color_orig=="black"] <- color_good[likelihood_quantile[results$color_orig=="black"]]
+	results$color[results$color_orig=="gray"] <- color_bad[likelihood_quantile[results$color_orig=="gray"]]
+	results_outside <- subset(results, results$color_orig=="gray")
+	results_inside <- subset(results, results$color_orig=="black")
+  }
   graphics::par(mfrow=c(ceiling(nplots/nparams), nparams))
   for (i in sequence(nparams)) {
     if(local.only){
