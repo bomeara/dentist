@@ -1,45 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dent_likelihood.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dent_propose.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dent_walk.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot.dentist.html</loc>
-  </url>
-  <url>
-    <loc>/reference/print.dentist.html</loc>
-  </url>
-  <url>
-    <loc>/reference/quiet_fn.html</loc>
-  </url>
-  <url>
-    <loc>/reference/sphere_propose.html</loc>
-  </url>
-  <url>
-    <loc>/reference/summary.dentist.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/LICENSE.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/dent_likelihood.html</loc></url>
+<url><loc>/reference/dent_propose.html</loc></url>
+<url><loc>/reference/dent_walk.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/plot.dentist.html</loc></url>
+<url><loc>/reference/print.dentist.html</loc></url>
+<url><loc>/reference/quiet_fn.html</loc></url>
+<url><loc>/reference/sphere_propose.html</loc></url>
+<url><loc>/reference/summary.dentist.html</loc></url>
 </urlset>
+
